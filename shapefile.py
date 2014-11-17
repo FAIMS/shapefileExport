@@ -33,6 +33,7 @@ import re
 import zipfile
 import subprocess
 
+print sys.argv
 
 originalDir = sys.argv[0]
 exportDir = sys.argv[1]
@@ -41,7 +42,6 @@ exportDB = "./shape.sqlite3"
 srid = json.loads(open(sys.argv[2]))['EPSG']
 arch16nFile = "./arch16N.properties"
 
-print srid
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
