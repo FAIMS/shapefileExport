@@ -37,7 +37,7 @@ import glob
 print sys.argv
 
 originalDir = sys.argv[1]
-exportDir = sys.argv[2]
+exportDir = sys.argv[2]+"/"
 importDB = originalDir+"db.sqlite3"
 exportDB = exportDir+"shape.sqlite3"
 json = json.load(open(sys.argv[3]))
