@@ -23,7 +23,6 @@ Python:
 import sqlite3
 import csv, codecs, cStringIO
 from xml.dom import minidom
-from BeautifulSoup import BeautifulSoup
 import sys
 import pprint
 import glob
