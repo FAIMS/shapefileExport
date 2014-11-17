@@ -154,10 +154,7 @@ for line in f.readlines():
 
 
 
-for row in exportCon.execute("select *, astext(geospatialcolumn) from Tracklog limit 5"):
-	print row
 
-		
 exportCon.commit()
 
 files = ['shape.sqlite3']
