@@ -47,11 +47,11 @@ exportDir = tempfile.mkdtemp()+"/"
 finalExportDir = sys.argv[2]+"/"
 importDB = originalDir+"db.sqlite3"
 exportDB = exportDir+"shape.sqlite3"
-json = json.load(open(sys.argv[3]))
-srid = json.load(originalDir+'module.settings')['srid']
+jsondata = json.load(originalDir+'module.settings')
+srid = jsondata['srid']
 arch16nFile = glob.glob(originalDir+"*.0.properties")[0]
-print arch16nFile
-moduleName = clean(json.load(originalDir+'module.settings')['name'])
+print jsondata
+moduleName = clean(jsondata['name'])
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
