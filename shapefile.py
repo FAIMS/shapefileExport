@@ -39,7 +39,7 @@ originalDir = sys.argv[1]
 exportDir = sys.argv[2]
 importDB = originalDir+"db.sqlite3"
 exportDB = exportDir+"shape.sqlite3"
-srid = json.loads(open(sys.argv[3]))['EPSG']
+json = json.load(open(sys.argv[3]))
 arch16nFile = originalDir+"arch16N.properties"
 
 
