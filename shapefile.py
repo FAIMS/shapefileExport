@@ -38,7 +38,7 @@ import tempfile
 print sys.argv
 
 originalDir = sys.argv[1]
-exportDir = tempfile.mkdtemp()
+exportDir = tempfile.mkdtemp()+"/"
 finalExportDir = sys.argv[2]+"/"
 importDB = originalDir+"db.sqlite3"
 exportDB = exportDir+"shape.sqlite3"
