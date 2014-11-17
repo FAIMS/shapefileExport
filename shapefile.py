@@ -46,6 +46,7 @@ json = json.load(open(sys.argv[3]))
 srid = json['EPSG']
 arch16nFile = glob.glob(originalDir+"*.0.properties")[0]
 print arch16nFile
+moduleName = clean(json.load(originalDir+'module.settings')[name])
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
@@ -195,5 +196,5 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
 
 zipf = zipfile.ZipFile(finalExportDir+'export.zip', 'w')
 for file in files:
-    zipf.write(exportDir+file)
+    zipf.write(exportDir+file, moduleName+'/'+file)
 zipf.close()
