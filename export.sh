@@ -9,7 +9,7 @@
 json=`python -mjson.tool $2`
  
 # export database to csv using json inputs and pass output into export file inside download directory
-python shapefile.py $1 $3 $json 
+python shapefile.py $1 $3 $2 
  
 # generate markup and pass output to markup file
 echo "Exported **CSV**" $1 $json $3  > $4
