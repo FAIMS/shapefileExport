@@ -168,6 +168,7 @@ for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospa
 	files.append("%s.dbf" % (row[0]))
 	files.append("%s.shp" % (row[0]))
 	files.append("%s.shx" % (row[0]))
+	print cmd
 	subprocess.call(cmd, cwd=exportDir)
 
 for at in importCon.execute("select aenttypename from aenttype"):
