@@ -37,6 +37,11 @@ import tempfile
 
 print sys.argv
 
+
+def clean(str):
+	 out = re.sub(" ([a-z])|[^A-Za-z0-9]+", upper_repl, str)	 
+	 return out
+
 originalDir = sys.argv[1]
 exportDir = tempfile.mkdtemp()+"/"
 finalExportDir = sys.argv[2]+"/"
@@ -98,10 +103,6 @@ def upper_repl(match):
 		return ""
 	return match.group(1).upper()
 
-def clean(str):
-	 out = re.sub(" ([a-z])|[^A-Za-z0-9]+", upper_repl, str)
-	 
-	 return out
 
 for aenttypeid, aenttypename in importCon.execute("select aenttypeid, aenttypename from aenttype"):	
 	aenttypename = clean(aenttypename)
