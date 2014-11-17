@@ -47,7 +47,7 @@ exportDir = tempfile.mkdtemp()+"/"
 finalExportDir = sys.argv[2]+"/"
 importDB = originalDir+"db.sqlite3"
 exportDB = exportDir+"shape.sqlite3"
-jsondata = json.load(originalDir+'module.settings')
+jsondata = json.load(open(originalDir+'module.settings'))
 srid = jsondata['srid']
 arch16nFile = glob.glob(originalDir+"*.0.properties")[0]
 print jsondata
