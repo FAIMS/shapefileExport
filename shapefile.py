@@ -199,3 +199,8 @@ zipf = zipfile.ZipFile("%s/%s-export.zip" % (finalExportDir,moduleName), 'w')
 for file in files:
     zipf.write(exportDir+file, moduleName+'/'+file)
 zipf.close()
+
+try:
+    os.remove(exportDir)
+except OSError:
+    pass
