@@ -37,6 +37,10 @@ import tempfile
 
 print sys.argv
 
+def upper_repl(match):
+	if (match.group(1) == None):
+		return ""
+	return match.group(1).upper()
 
 def clean(str):
 	 out = re.sub(" ([a-z])|[^A-Za-z0-9]+", upper_repl, str)	 
@@ -98,10 +102,7 @@ f.close()
 
 
 
-def upper_repl(match):
-	if (match.group(1) == None):
-		return ""
-	return match.group(1).upper()
+
 
 
 for aenttypeid, aenttypename in importCon.execute("select aenttypeid, aenttypename from aenttype"):	
