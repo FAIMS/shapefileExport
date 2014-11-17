@@ -159,18 +159,18 @@ exportCon.commit()
 
 files = ['shape.sqlite3']
 for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
-	cmd = ["spatialite_tool", "-e", "-shp", "%s" % (row[0].decode("ascii")), "-d", "shape.sqlite3", "-t", "%s" % (row[0]), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
+	cmd = ["spatialite_tool", "-e", "-shp", "%s" % (row[0].decode("ascii")), "-d", exportDir+"shape.sqlite3", "-t", "%s" % (row[0]), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
 	files.append("%s.dbf" % (row[0]))
 	files.append("%s.shp" % (row[0]))
 	files.append("%s.shx" % (row[0]))
-	subprocess.call(cmd)
+	subprocess.call(cmd, cwd=exportDir)
 
 for at in importCon.execute("select aenttypename from aenttype"):
 	aenttypename = "%s" % (clean(at[0]))
 	cursor = exportCon.cursor()
 	cursor.execute("select * from %s" % (aenttypename))	
 	files.append("Entity-%s.csv" % (aenttypename))
-	csv_writer = csv.writer(open("Entity-%s.csv" % (aenttypename), "wb+"))
+	csv_writer = csv.writer(open(exportDir+"Entity-%s.csv" % (aenttypename), "wb+"))
 	csv_writer.writerow([i[0] for i in cursor.description]) # write headers
 	csv_writer.writerows(cursor)
 	#spatialite_tool -e -shp surveyUnitTransectBuffer -d db.sqlite3 -t surveyUnitWithTransectBuffer -c utf-8 -g surveyBuffer --type polygon
@@ -186,7 +186,7 @@ relncursor = importCon.cursor()
 for relntypeid, relntypename in relntypecursor.execute(relntypequery): 
 	relncursor.execute(relnquery, [relntypename])
 	files.append("Relationship-%s.csv" % (clean(relntypename)))
-	csv_writer = csv.writer(open("Relationship-%s.csv" % (clean(relntypename)), "wb+"))
+	csv_writer = csv.writer(open(exportDir+"Relationship-%s.csv" % (clean(relntypename)), "wb+"))
 	csv_writer.writerow([i[0] for i in relncursor.description]) # write headers
 	csv_writer.writerows(relncursor)
 
