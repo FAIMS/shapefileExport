@@ -32,6 +32,7 @@ import shutil
 import re
 import zipfile
 import subprocess
+import glob
 
 print sys.argv
 
@@ -40,8 +41,8 @@ exportDir = sys.argv[2]
 importDB = originalDir+"db.sqlite3"
 exportDB = exportDir+"shape.sqlite3"
 json = json.load(open(sys.argv[3]))
-arch16nFile = originalDir+"arch16N.properties"
-
+arch16nFile = glob.glob(originalDir+"*.0.properties")[0]
+print arch16nFile
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
