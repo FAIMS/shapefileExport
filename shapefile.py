@@ -164,7 +164,7 @@ exportCon.commit()
 
 files = ['shape.sqlite3']
 for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
-	cmd = ["spatialite_tool", "-e", "-shp", "%s" % (row[0].decode("ascii")), "-d", "shape.sqlite3", "-t", "%s" % (row[0]), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
+	cmd = ["spatialite_tool", "-e", "-shp", "%s" % (row[0].decode("ascii")), "-d", "%s/shape.sqlite3" % (exportDir), "-t", "%s" % (row[0]), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
 	files.append("%s.dbf" % (row[0]))
 	files.append("%s.shp" % (row[0]))
 	files.append("%s.shx" % (row[0]))
