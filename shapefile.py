@@ -145,7 +145,7 @@ subprocess.call(["bash", "./format.sh", originalDir, exportDir])
 
 
 updateArray = []
-f= open('shape.out', 'r')
+f= open(exportDir+'shape.out', 'r')
 for line in f.readlines():
 	out = line.replace("\n","").split("\t")
 	if (len(out) ==4):		
