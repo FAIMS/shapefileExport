@@ -33,11 +33,13 @@ import re
 import zipfile
 import subprocess
 import glob
+import tempfile
 
 print sys.argv
 
 originalDir = sys.argv[1]
-exportDir = sys.argv[2]+"/"
+exportDir = tempfile.mkdtemp()
+finalExportDir = sys.argv[2]+"/"
 importDB = originalDir+"db.sqlite3"
 exportDB = exportDir+"shape.sqlite3"
 json = json.load(open(sys.argv[3]))
@@ -191,7 +193,7 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
 	csv_writer.writerows(relncursor)
 
 
-zipf = zipfile.ZipFile(exportDir+'export.zip', 'w')
+zipf = zipfile.ZipFile(finalExportDir+'export.zip', 'w')
 for file in files:
     zipf.write(exportDir+file)
 zipf.close()
