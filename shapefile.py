@@ -35,12 +35,12 @@ import subprocess
 
 print sys.argv
 
-originalDir = sys.argv[0]
-exportDir = sys.argv[1]
-importDB = originalDir+"./db.sqlite3"
-exportDB = "./shape.sqlite3"
-srid = json.loads(open(sys.argv[2]))['EPSG']
-arch16nFile = "./arch16N.properties"
+originalDir = sys.argv[1]
+exportDir = sys.argv[2]
+importDB = originalDir+"db.sqlite3"
+exportDB = exportDir+"shape.sqlite3"
+srid = json.loads(open(sys.argv[3]))['EPSG']
+arch16nFile = originalDir+"arch16N.properties"
 
 
 def zipdir(path, zip):
@@ -133,12 +133,12 @@ for aenttypename, uuid, createdAt, createdBy, modifiedAt, modifiedBy,geometry in
 
 
 try:
-    os.remove('shape.out')
+    os.remove(exportDir+'shape.out')
 except OSError:
     pass
 
 
-subprocess.call(["bash", "./format.sh"])
+subprocess.call(["bash", "./format.sh", originalDir, exportDir])
 
 
 
