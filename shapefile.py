@@ -145,7 +145,7 @@ except OSError:
     pass
 
 
-subprocess.call(["bash", "./format.sh", originalDir, exportDir])
+subprocess.call(["bash", "./format.sh", originalDir, exportDir, exportDir])
 
 
 
