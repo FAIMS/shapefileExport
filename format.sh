@@ -3,7 +3,8 @@
 # Load RVM into a shell session *as a function*
 export PATH="$HOME/.rbenv/bin:$PATH" 
 eval "$(rbenv init -)"
-thisdir=$(pwd)
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+echo $DIR
 cd $2
-ruby $thisDir/string_formatter_tester.rb $1/db.sqlite3 shape.format > $3/shape.out
+ruby $DIR/string_formatter_tester.rb $1/db.sqlite3 shape.format > $3/shape.out
 
