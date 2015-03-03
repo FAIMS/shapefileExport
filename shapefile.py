@@ -120,7 +120,7 @@ for aenttypeid, aenttypename in importCon.execute("select aenttypeid, aenttypena
 geometryColumns = []
 for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
 	geometryColumns.append(row[0])
-	geocolumn = "select addGeometryColumn('%s', 'geospatialcolumn', %s, '%s', 'XY');" %(row[0],srid,row[1]);
+	geocolumn = "select addGeometryColumn('%s', 'geospatialcolumn', %s, '%s', 'XY');" %(clean(row[0]),srid,row[1]);
 	
 	exportCon.execute(geocolumn)
 
@@ -164,10 +164,10 @@ exportCon.commit()
 
 files = ['shape.sqlite3']
 for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
-	cmd = ["spatialite_tool", "-e", "-shp", "%s" % (row[0].decode("ascii")), "-d", "%sshape.sqlite3" % (exportDir), "-t", "%s" % (row[0]), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
-	files.append("%s.dbf" % (row[0]))
-	files.append("%s.shp" % (row[0]))
-	files.append("%s.shx" % (row[0]))
+	cmd = ["spatialite_tool", "-e", "-shp", "%s" % (row[0].decode("ascii")), "-d", "%sshape.sqlite3" % (exportDir), "-t", "%s" % (clean(row[0])), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
+	files.append("%s.dbf" % (clean(row[0])))
+	files.append("%s.shp" % (clean(row[0])))
+	files.append("%s.shx" % (clean(row[0])))
 	print cmd
 	subprocess.call(cmd, cwd=exportDir)
 
