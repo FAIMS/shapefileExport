@@ -34,6 +34,7 @@ import zipfile
 import subprocess
 import glob
 import tempfile
+import errno
 
 print sys.argv
 
@@ -46,6 +47,14 @@ def clean(str):
 	 out = re.sub(" ([a-z])|[^A-Za-z0-9]+", upper_repl, str)	 
 	 return out
 
+def makeSurePathExists(path):
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
+
+
 originalDir = sys.argv[1]
 exportDir = tempfile.mkdtemp()+"/"
 finalExportDir = sys.argv[2]+"/"
@@ -56,6 +65,7 @@ srid = jsondata['srid']
 arch16nFile = glob.glob(originalDir+"*.0.properties")[0]
 print jsondata
 moduleName = clean(jsondata['name'])
+fileNameType = "Unchanged" #Original, Unchanged, Identifier
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
@@ -161,8 +171,30 @@ for line in f.readlines():
 
 
 exportCon.commit()
-
 files = ['shape.sqlite3']
+
+
+for directory in importCon.execute("select distinct aenttypename, attributename from latestnondeletedaentvalue join attributekey using (attributeid) where attributeisfile is not null and measure is not null"):
+	makeSurePathExists("%s/%s" % (clean(directory[0]), clean(directory[1])))
+
+for filename in importCon.execute("select uuid, measure, freetext, certainty, attributename, aenttypename from latestnondeletedaentvalue join attributekey using (attributeid) where attributeisfile is not null and measure is not null"):
+	if (fileNameType == "Unchanged"):
+		oldPath = filename[1].split("/")
+		oldFilename = oldPath[2]
+		newFilename = "%s/%s/%s" % (filename[6], filename[5], oldFilename)
+		shutil.copyfile(originalDir+filename[1], newFilename)
+		exportCon.execute("update %s set %s = ? where uuid = ?" % (filename[6], filename[5]), (newFilename, filename[0]))
+		
+
+
+
+
+
+	# check input flag as to what filename to export
+
+
+
+
 for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
 	cmd = ["spatialite_tool", "-e", "-shp", "%s" % (clean(row[0]).decode("ascii")), "-d", "%sshape.sqlite3" % (exportDir), "-t", "%s" % (clean(row[0])), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
 	files.append("%s.dbf" % (clean(row[0])))
@@ -179,8 +211,8 @@ for at in importCon.execute("select aenttypename from aenttype"):
 	csv_writer = csv.writer(open(exportDir+"Entity-%s.csv" % (aenttypename), "wb+"))
 	csv_writer.writerow([i[0] for i in cursor.description]) # write headers
 	csv_writer.writerows(cursor)
-	#spatialite_tool -e -shp surveyUnitTransectBuffer -d db.sqlite3 -t surveyUnitWithTransectBuffer -c utf-8 -g surveyBuffer --type polygon
 
+	#spatialite_tool -e -shp surveyUnitTransectBuffer -d db.sqlite3 -t surveyUnitWithTransectBuffer -c utf-8 -g surveyBuffer --type polygon
 
 relntypequery = '''select distinct relntypeid, relntypename from relntype join latestnondeletedrelationship using (relntypeid);'''
 
