@@ -1,5 +1,15 @@
 {
   "name":"Generalised Exporter",
   "version":29,
-  "key":"e6485af4-6e05-11e4-8c49-3c970e0cc7d6"
+  "key":"e6485af4-6e05-11e4-8c49-3c970e0cc7d6",
+	"interface":[
+  {
+      "type":"dropdown",
+      "label":"Export Images?",
+      "items":[
+        "Yes",
+        "No"        
+      ],
+      "default":"Yes"
+    }]
 }
