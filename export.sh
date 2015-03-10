@@ -12,14 +12,16 @@ json=`python -mjson.tool $2`
 python shapefile.py $1 $3 $2 > foo
 
 echo "Your data have been prepared for export.
----
-
-Click \"Download file\" below to get your data as a single compressed file.
 ===
+
+Click Download file below to get your data as a single compressed file.
+---
 
 If the download button doesn't appear, contact support immediately.
 
-Debug data follows."  > $4 
+Debug data follows:
+
+    "  > $4 
 
 cat foo >> $4
 # generate markup and pass output to markup file
