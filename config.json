@@ -7,7 +7,7 @@
       "type":"dropdown",
       "label":"Export Images?",
       "items":[
-        "Yes",
+        {"Yes": "yes"},
         "No"        
       ],
       "default":"Yes"
