@@ -86,10 +86,12 @@ images = False
 try:
 	foo= json.load(open(sys.argv[3],"r"))
 	print foo
-	if "Export Images and Files?" in foo and foo["Export Images?"] != None:
+	if "Export Images and Files?" in foo and foo["Export Images?"] == "Please include images":
 		images = True
 except:
-	images = True	
+	images = True
+
+print "Exporting Images %s" % (images)
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
