@@ -86,11 +86,12 @@ images = None
 try:
 	foo= json.load(open(sys.argv[3],"r"))
 	print foo["Export Images and Files?"]
-	if (foo["Export Images and Files?"] != None):
+	if (foo["Export Images and Files?"] != []):
 		images = True
 	else:
 		images = False
 except:
+	print "Try failed"
 	images = True
 
 print "Exporting Images %s" % (images)
