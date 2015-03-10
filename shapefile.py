@@ -35,8 +35,19 @@ import subprocess
 import glob
 import tempfile
 import errno
+import imghdr
+
+from collections import defaultdict
+
 
 print sys.argv
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
 
 def upper_repl(match):
 	if (match.group(1) == None):
@@ -46,6 +57,10 @@ def upper_repl(match):
 def clean(str):
 	 out = re.sub(" ([a-z])|[^A-Za-z0-9]+", upper_repl, str)	 
 	 return out
+
+def cleanWithUnder(str):
+	 out = re.sub("[^a-zA-Z0-9]+", "_", str)	 
+	 return out	 
 
 def makeSurePathExists(path):
     try:
@@ -65,7 +80,7 @@ srid = jsondata['srid']
 arch16nFile = glob.glob(originalDir+"*.0.properties")[0]
 print jsondata
 moduleName = clean(jsondata['name'])
-fileNameType = "Unchanged" #Original, Unchanged, Identifier
+fileNameType = "Identifier" #Original, Unchanged, Identifier
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
@@ -94,8 +109,11 @@ for line in importCon.iterdump():
 	except sqlite3.Error:		
 		pass
 '''		
-
-
+            
+exifCon = sqlite3.connect(exportDB)
+exifCon.row_factory = dict_factory
+exportCon.enable_load_extension(True)
+exportCon.load_extension("libspatialite.so.5")
 
 
   
@@ -120,7 +138,6 @@ for aenttypeid, aenttypename in importCon.execute("select aenttypeid, aenttypena
 	attributes = ['identifier', 'createdBy', 'createdAtGMT', 'modifiedBy', 'modifiedAtGMT']
 	for attr in importCon.execute("select attributename from attributekey join idealaent using (attributeid) where aenttypeid = ? order by aentcountorder", [aenttypeid]):
 		attrToInsert = clean(attr[0])
-
 		attributes.append(attrToInsert)
 	attribList = " TEXT, \n\t".join(attributes)
 	createStmt = "Create table %s (\n\tuuid TEXT PRIMARY KEY,\n\t%s TEXT);" % (aenttypename, attribList)
@@ -174,17 +191,74 @@ exportCon.commit()
 files = ['shape.sqlite3']
 
 
-for directory in importCon.execute("select distinct aenttypename, attributename from latestnondeletedaentvalue join attributekey using (attributeid) where attributeisfile is not null and measure is not null"):
-	makeSurePathExists("%s/%s" % (clean(directory[0]), clean(directory[1])))
+for directory in importCon.execute("select distinct aenttypename, attributename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
+	makeSurePathExists("%s/%s/%s" % (exportDir,clean(directory[0]), clean(directory[1])))
 
-for filename in importCon.execute("select uuid, measure, freetext, certainty, attributename, aenttypename from latestnondeletedaentvalue join attributekey using (attributeid) where attributeisfile is not null and measure is not null"):
-	if (fileNameType == "Unchanged"):
-		oldPath = filename[1].split("/")
-		oldFilename = oldPath[2]
-		newFilename = "%s/%s/%s" % (filename[6], filename[5], oldFilename)
-		shutil.copyfile(originalDir+filename[1], newFilename)
-		exportCon.execute("update %s set %s = ? where uuid = ?" % (filename[6], filename[5]), (newFilename, filename[0]))
+filehash = defaultdict(int)
+
+
+
+for filename in importCon.execute("select uuid, measure, freetext, certainty, attributename, aenttypename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
+	
+	oldPath = filename[1].split("/")
+	oldFilename = oldPath[2]
+	aenttypename = clean(filename[5])
+	attributename = clean(filename[4])
+	newFilename = "%s/%s/%s" % (aenttypename, attributename, oldFilename)
+
+	if (fileNameType == "Identifier"):
+		print filename[0]
 		
+		filehash["%s%s" % (filename[0], attributename)] += 1
+		
+
+		foo = exportCon.execute("select identifier from %s where uuid = %s" % (aenttypename, filename[0]))
+		identifier=cleanWithUnder(foo.fetchone()[0])
+
+		r= re.search("(\.[^.]*)$",oldFilename)
+
+		delimiter = ""
+		
+		if filename[2]:
+			delimiter = "a"
+
+		newFilename =  "%s/%s/%s_%s%s%s" % (aenttypename, attributename, identifier, filehash["%s%s" % (filename[0], attributename)],delimiter, r.group(0))
+		
+
+
+	exifdata = exifCon.execute("select * from %s where uuid = %s" % (aenttypename, filename[0])).fetchone()
+	iddata = []	
+	for id in importCon.execute("select coalesce(measure, vocabname, freetext) from latestnondeletedaentvalue left outer join vocabulary using (vocabid) where uuid = %s union select aenttypename from latestnondeletedarchent join aenttype using (aenttypeid) where uuid = %s" % (filename[0], filename[0])):
+		iddata.append(id[0])
+	shutil.copyfile(originalDir+filename[1], exportDir+newFilename)
+
+	mergedata = exifdata.copy()
+	mergedata.update(jsondata)
+	exifjson = {"SourceFile":exportDir+newFilename, 
+				"UserComment": [json.dumps(mergedata)], 
+				"ImageDescription": exifdata['identifier'], 
+				"XPSubject": "Annotation: %s" % (filename[2]),
+				"Keywords": iddata,
+				"Artist": exifdata['createdBy'],
+				"XPAuthor": exifdata['createdBy'],
+				"Software": "FAIMS Project",
+				"ImageID": exifdata['uuid'],
+				"Copyright": jsondata['name']
+
+
+				}
+	with open(exportDir+newFilename+".json", "w") as outfile:
+		json.dump(exifjson, outfile)	
+
+	if imghdr.what(exportDir+newFilename):
+		
+		subprocess.call(["exiftool", "-q", "-sep", "\"; \"", "-overwrite_original", "-j=%s" % (exportDir+newFilename+".json"), exportDir+newFilename])
+
+
+	exportCon.execute("update %s set %s = ? where uuid = ?" % (aenttypename, attributename), (newFilename, filename[0]))
+	print newFilename
+	files.append(newFilename+".json")
+	files.append(newFilename)
 
 
 

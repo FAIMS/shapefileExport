@@ -1,1 +1,1 @@
-sudo apt-get install spatialite-bin -y
+sudo apt-get install spatialite-bin libimage-exiftool-perl -y
