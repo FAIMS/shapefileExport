@@ -82,12 +82,14 @@ print jsondata
 moduleName = clean(jsondata['name'])
 fileNameType = "Identifier" #Original, Unchanged, Identifier
 
-images = False
+images = None
 try:
 	foo= json.load(open(sys.argv[3],"r"))
 	print foo["Export Images and Files?"]
-	if (foo["Export Images and Files?"] == "Please include images"):
+	if (foo["Export Images and Files?"] != None):
 		images = True
+	else:
+		images = False
 except:
 	images = True
 
