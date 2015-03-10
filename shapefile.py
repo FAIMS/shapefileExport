@@ -155,7 +155,7 @@ for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospa
 
 
 
-for aenttypename, uuid, createdAt, createdBy, modifiedAt, modifiedBy,geometry in importCon.execute("select aenttypename, uuid, createdAt || ' GMT', createdBy, datetime(modifiedAt) || ' GMT', modifiedBy,transform(geometryn(geospatialcolumn,1),%s) from latestnondeletedarchent join aenttype using (aenttypeid) join createdModifiedAtBy using (uuid) order by createdAt" % (srid)):
+for aenttypename, uuid, createdAt, createdBy, modifiedAt, modifiedBy,geometry in importCon.execute("select aenttypename, uuid, createdAt || ' GMT', createdBy, datetime(modifiedAt) || ' GMT', modifiedBy, geometryn(transform(geospatialcolumn,casttointeger(%s)),1) from latestnondeletedarchent join aenttype using (aenttypeid) join createdModifiedAtBy using (uuid) order by createdAt" % (srid)):
 	
 	if (aenttypename in geometryColumns):		
 		insert = "insert into %s (uuid, createdAtGMT, createdBy, modifiedAtGMT, modifiedBy, geospatialcolumn) VALUES(?, ?, ?, ?, ?, ?)" % (clean(aenttypename))
@@ -234,6 +234,7 @@ for filename in importCon.execute("select uuid, measure, freetext, certainty, at
 
 	mergedata = exifdata.copy()
 	mergedata.update(jsondata)
+	mergedata.pop("geospatialcolumn", None)
 	exifjson = {"SourceFile":exportDir+newFilename, 
 				"UserComment": [json.dumps(mergedata)], 
 				"ImageDescription": exifdata['identifier'], 
@@ -279,8 +280,15 @@ for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospa
 
 for at in importCon.execute("select aenttypename from aenttype"):
 	aenttypename = "%s" % (clean(at[0]))
+
+
 	cursor = exportCon.cursor()
-	cursor.execute("select * from %s" % (aenttypename))	
+	try:
+		cursor.execute("select *, astext(geospatialcolumn) as geometryAsWKT from %s" % (aenttypename))	
+	except:
+		cursor.execute("select * from %s" % (aenttypename))		
+
+
 	files.append("Entity-%s.csv" % (aenttypename))
 	csv_writer = csv.writer(open(exportDir+"Entity-%s.csv" % (aenttypename), "wb+"))
 	csv_writer.writerow([i[0] for i in cursor.description]) # write headers
