@@ -5,7 +5,7 @@
 	"interface":[
   {
       "type":"checkbox",
-      "label":"Export Images?",
+      "label":"Export Images and Files?",
       "items":[
         "Please include images"           
       ],
