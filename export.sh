@@ -12,7 +12,7 @@ json=`python -mjson.tool $2`
 python shapefile.py $1 $3 $2 > foo
 
 echo "Your data have been prepared for export.
-===
+---
 
 Click Download file below to get your data as a single compressed file.
 ---
