@@ -85,8 +85,8 @@ fileNameType = "Identifier" #Original, Unchanged, Identifier
 images = False
 try:
 	foo= json.load(open(sys.argv[3],"r"))
-	print foo
-	if "Export Images and Files?" in foo and foo["Export Images and Files?"] == "Please include images":
+	print foo["Export Images and Files?"]
+	if (foo["Export Images and Files?"] == "Please include images"):
 		images = True
 except:
 	images = True
