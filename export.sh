@@ -9,8 +9,8 @@
 json=`python -mjson.tool $2`
  
 # export database to csv using json inputs and pass output into export file inside download directory
-python shapefile.py $1 $3 $2 
+foo = $(python shapefile.py $1 $3 $2)
 
-echo "Export is Done. Please click download below to get your compressed file." > $4
+echo -n "Your data have been prepared for export. Click \"Download file\" below to get your data as a single compressed file. If the download button doesn't appear, contact support immediately. Debug data follows. \n\n " $foo > $4
  
 # generate markup and pass output to markup file
