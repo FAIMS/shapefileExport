@@ -82,6 +82,8 @@ print jsondata
 moduleName = clean(jsondata['name'])
 fileNameType = "Identifier" #Original, Unchanged, Identifier
 
+print sys.argv[2]
+
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
         for file in files:
