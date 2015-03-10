@@ -86,7 +86,7 @@ images = False
 try:
 	foo= json.load(open(sys.argv[3],"r"))
 	print foo
-	if "Export Images and Files?" in foo and foo["Export Images?"] == "Please include images":
+	if "Export Images" in foo and foo["Export Images?"] == "Please include images":
 		images = True
 except:
 	images = True
