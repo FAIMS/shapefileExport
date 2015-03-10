@@ -14,7 +14,7 @@ python shapefile.py $1 $3 $2 > foo
 echo "Your data have been prepared for export.
 ---
 
-Click <a href=\"results/download_file\">\"Download file\"</a> below to get your data as a single compressed file.
+Click [Download file](results/download_file) below to get your data as a single compressed file.
 ---
 
 If the download button doesn't appear, contact support immediately.
