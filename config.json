@@ -7,9 +7,8 @@
       "type":"checkbox",
       "label":"Export Images?",
       "items":[
-        "Yes",
-        "No"        
+        "Please include images"           
       ],
-      "default":"Yes"
+      "default":"Please include images"
     }]
 }
