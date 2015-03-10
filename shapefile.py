@@ -82,7 +82,14 @@ print jsondata
 moduleName = clean(jsondata['name'])
 fileNameType = "Identifier" #Original, Unchanged, Identifier
 
-print sys.argv[2]
+images = False
+try:
+	foo= json.load(open(sys.argv[3],"r"))
+	print foo
+	if "Export Images and Files?" in foo and foo["Export Images?"] != None:
+		images = True
+except:
+	images = True	
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
@@ -193,75 +200,77 @@ exportCon.commit()
 files = ['shape.sqlite3']
 
 
-for directory in importCon.execute("select distinct aenttypename, attributename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
-	makeSurePathExists("%s/%s/%s" % (exportDir,clean(directory[0]), clean(directory[1])))
+if images:
+	for directory in importCon.execute("select distinct aenttypename, attributename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
+		makeSurePathExists("%s/%s/%s" % (exportDir,clean(directory[0]), clean(directory[1])))
 
-filehash = defaultdict(int)
+	filehash = defaultdict(int)
 
 
 
-for filename in importCon.execute("select uuid, measure, freetext, certainty, attributename, aenttypename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
-	
-	oldPath = filename[1].split("/")
-	oldFilename = oldPath[2]
-	aenttypename = clean(filename[5])
-	attributename = clean(filename[4])
-	newFilename = "%s/%s/%s" % (aenttypename, attributename, oldFilename)
 
-	if (fileNameType == "Identifier"):
-		print filename[0]
+	for filename in importCon.execute("select uuid, measure, freetext, certainty, attributename, aenttypename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
 		
-		filehash["%s%s" % (filename[0], attributename)] += 1
-		
+		oldPath = filename[1].split("/")
+		oldFilename = oldPath[2]
+		aenttypename = clean(filename[5])
+		attributename = clean(filename[4])
+		newFilename = "%s/%s/%s" % (aenttypename, attributename, oldFilename)
 
-		foo = exportCon.execute("select identifier from %s where uuid = %s" % (aenttypename, filename[0]))
-		identifier=cleanWithUnder(foo.fetchone()[0])
+		if (fileNameType == "Identifier"):
+			print filename[0]
+			
+			filehash["%s%s" % (filename[0], attributename)] += 1
+			
 
-		r= re.search("(\.[^.]*)$",oldFilename)
+			foo = exportCon.execute("select identifier from %s where uuid = %s" % (aenttypename, filename[0]))
+			identifier=cleanWithUnder(foo.fetchone()[0])
 
-		delimiter = ""
-		
-		if filename[2]:
-			delimiter = "a"
+			r= re.search("(\.[^.]*)$",oldFilename)
 
-		newFilename =  "%s/%s/%s_%s%s%s" % (aenttypename, attributename, identifier, filehash["%s%s" % (filename[0], attributename)],delimiter, r.group(0))
-		
+			delimiter = ""
+			
+			if filename[2]:
+				delimiter = "a"
 
-
-	exifdata = exifCon.execute("select * from %s where uuid = %s" % (aenttypename, filename[0])).fetchone()
-	iddata = []	
-	for id in importCon.execute("select coalesce(measure, vocabname, freetext) from latestnondeletedarchentidentifiers where uuid = %s union select aenttypename from latestnondeletedarchent join aenttype using (aenttypeid) where uuid = %s" % (filename[0], filename[0])):
-		iddata.append(id[0])
-	shutil.copyfile(originalDir+filename[1], exportDir+newFilename)
-
-	mergedata = exifdata.copy()
-	mergedata.update(jsondata)
-	mergedata.pop("geospatialcolumn", None)
-	exifjson = {"SourceFile":exportDir+newFilename, 
-				"UserComment": [json.dumps(mergedata)], 
-				"ImageDescription": exifdata['identifier'], 
-				"XPSubject": "Annotation: %s" % (filename[2]),
-				"Keywords": iddata,
-				"Artist": exifdata['createdBy'],
-				"XPAuthor": exifdata['createdBy'],
-				"Software": "FAIMS Project",
-				"ImageID": exifdata['uuid'],
-				"Copyright": jsondata['name']
+			newFilename =  "%s/%s/%s_%s%s%s" % (aenttypename, attributename, identifier, filehash["%s%s" % (filename[0], attributename)],delimiter, r.group(0))
+			
 
 
-				}
-	with open(exportDir+newFilename+".json", "w") as outfile:
-		json.dump(exifjson, outfile)	
+		exifdata = exifCon.execute("select * from %s where uuid = %s" % (aenttypename, filename[0])).fetchone()
+		iddata = []	
+		for id in importCon.execute("select coalesce(measure, vocabname, freetext) from latestnondeletedarchentidentifiers where uuid = %s union select aenttypename from latestnondeletedarchent join aenttype using (aenttypeid) where uuid = %s" % (filename[0], filename[0])):
+			iddata.append(id[0])
+		shutil.copyfile(originalDir+filename[1], exportDir+newFilename)
 
-	if imghdr.what(exportDir+newFilename):
-		
-		subprocess.call(["exiftool", "-q", "-sep", "\"; \"", "-overwrite_original", "-j=%s" % (exportDir+newFilename+".json"), exportDir+newFilename])
+		mergedata = exifdata.copy()
+		mergedata.update(jsondata)
+		mergedata.pop("geospatialcolumn", None)
+		exifjson = {"SourceFile":exportDir+newFilename, 
+					"UserComment": [json.dumps(mergedata)], 
+					"ImageDescription": exifdata['identifier'], 
+					"XPSubject": "Annotation: %s" % (filename[2]),
+					"Keywords": iddata,
+					"Artist": exifdata['createdBy'],
+					"XPAuthor": exifdata['createdBy'],
+					"Software": "FAIMS Project",
+					"ImageID": exifdata['uuid'],
+					"Copyright": jsondata['name']
 
 
-	exportCon.execute("update %s set %s = ? where uuid = ?" % (aenttypename, attributename), (newFilename, filename[0]))
-	print newFilename
-	files.append(newFilename+".json")
-	files.append(newFilename)
+					}
+		with open(exportDir+newFilename+".json", "w") as outfile:
+			json.dump(exifjson, outfile)	
+
+		if imghdr.what(exportDir+newFilename):
+			
+			subprocess.call(["exiftool", "-q", "-sep", "\"; \"", "-overwrite_original", "-j=%s" % (exportDir+newFilename+".json"), exportDir+newFilename])
+
+
+		exportCon.execute("update %s set %s = ? where uuid = ?" % (aenttypename, attributename), (newFilename, filename[0]))
+		print newFilename
+		files.append(newFilename+".json")
+		files.append(newFilename)
 
 
 
