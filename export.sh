@@ -17,11 +17,7 @@ echo "Your data have been prepared for export.
 Click \"Download file\" below to get your data as a single compressed file.
 ---
 
-If the download button doesn't appear, [contact support immediately](mailto:support@fedarch.org?subject=ExportDebug&body=" > $4
-cat /tmp/bar >>$4
-cat /tmp/foo >>$4
-
-echo ") and paste the following information into the email:
+If the download button doesn't appear, [contact support immediately](mailto:support@fedarch.org?subject=ExportDebug) and paste the following information into the email:
 
 "  >> $4 
 
