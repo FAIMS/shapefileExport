@@ -22,10 +22,10 @@ If the download button doesn't appear, contact support immediately.
 "  > $4 
 echo "Debug data follows: >> $4 
 "
-awk '{print "* "$0"\n"}' /tmp/bar >> $4
+awk '{print "   "$0"\n"}' /tmp/bar >> $4
 echo " 
 "
-awk '{print "* "$0"\n"}' /tmp/foo >> $4
+awk '{print "   "$0"\n"}' /tmp/foo >> $4
 
 
 

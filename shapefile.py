@@ -213,7 +213,7 @@ if images:
 
 
 
-
+	print "* File list exported:"
 	for filename in importCon.execute("select uuid, measure, freetext, certainty, attributename, aenttypename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
 		
 		oldPath = filename[1].split("/")
@@ -273,7 +273,7 @@ if images:
 
 
 		exportCon.execute("update %s set %s = ? where uuid = ?" % (aenttypename, attributename), (newFilename, filename[0]))
-		print newFilename
+		print "    * %s" % (newFilename)
 		files.append(newFilename+".json")
 		files.append(newFilename)
 

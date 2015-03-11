@@ -4,7 +4,7 @@
 export PATH="$HOME/.rbenv/bin:$PATH" 
 eval "$(rbenv init -)"
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-echo $DIR
+# echo $DIR
 cd $2
 ruby $DIR/string_formatter_tester.rb $1/db.sqlite3 $DIR/shape.format > $3/shape.out
 
