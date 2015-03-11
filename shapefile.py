@@ -78,20 +78,20 @@ exportDB = exportDir+"shape.sqlite3"
 jsondata = json.load(open(originalDir+'module.settings'))
 srid = jsondata['srid']
 arch16nFile = glob.glob(originalDir+"*.0.properties")[0]
-print jsondata
+# print jsondata
 moduleName = clean(jsondata['name'])
 fileNameType = "Identifier" #Original, Unchanged, Identifier
 
 images = None
 try:
 	foo= json.load(open(sys.argv[3],"r"))
-	print foo["Export Images and Files?"]
+	# print foo["Export Images and Files?"]
 	if (foo["Export Images and Files?"] != []):
 		images = True
 	else:
 		images = False
 except:
-	print "Try failed"
+	sys.stderr.write("Json input failed")
 	images = True
 
 print "Exporting Images %s" % (images)
@@ -223,7 +223,7 @@ if images:
 		newFilename = "%s/%s/%s" % (aenttypename, attributename, oldFilename)
 
 		if (fileNameType == "Identifier"):
-			print filename[0]
+			# print filename[0]
 			
 			filehash["%s%s" % (filename[0], attributename)] += 1
 			
@@ -291,7 +291,7 @@ for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospa
 	files.append("%s.dbf" % (clean(row[0])))
 	files.append("%s.shp" % (clean(row[0])))
 	files.append("%s.shx" % (clean(row[0])))
-	print cmd
+	# print cmd
 	subprocess.call(cmd, cwd=exportDir)
 
 for at in importCon.execute("select aenttypename from aenttype"):
