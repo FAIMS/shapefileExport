@@ -17,10 +17,10 @@ echo "Your data have been prepared for export.
 Click \"Download file\" below to get your data as a single compressed file.
 ---
 
-If the download button doesn't appear, contact support immediately.
+If the download button doesn't appear, contact support immediately and send us the following debug data:
 
 "  > $4 
-echo "Debug data follows: >> $4 
+
 "
 awk '{print "   "$0"\n"}' /tmp/bar >> $4
 echo " 
