@@ -20,15 +20,12 @@ Click [\"Download file\"](results/download_file) below to get your data as a sin
 If the download button doesn't appear, contact support immediately.
 
     "  > $4 
-if [ -s /tmp/foo ]
-	then
 echo "Debug data follows:
 "
-cat /tmp/bar >> $4
+awk '{print "   "$0"\n"}' /tmp/bar $4
 echo " 
 "
-cat /tmp/foo >> $4
-fi
+awk '{print "   "$0"\n"}' /tmp/foo >> $4
 
 
 [ ](#bottom)
