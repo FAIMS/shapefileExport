@@ -28,5 +28,5 @@ echo "
 awk '{print "   "$0"\n"}' /tmp/foo >> $4
 
 
-[ ](#bottom)
+
 # generate markup and pass output to markup file
