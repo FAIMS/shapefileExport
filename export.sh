@@ -21,7 +21,7 @@ If the download button doesn't appear, [contact support immediately](mailto:supp
 cat /tmp/bar >>$4
 cat /tmp/foo >>$4
 
-echo ") and send us the following debug data:
+echo ") and paste the following information into the email:
 
 "  >> $4 
 
