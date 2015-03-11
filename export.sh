@@ -13,9 +13,11 @@ python shapefile.py $1 $3 $2 > /tmp/bar 2> /tmp/foo
 
 echo "**Your data have been prepared for export.**
 
-
 **Click \"Download file\" below to get your data as a single compressed file.**
----
+
+
+----------
+
 
 If the download button doesn't appear, [contact support@fedarch.org immediately](mailto:support@fedarch.org?subject=ExportDebug) and paste the following information into the email:
 
