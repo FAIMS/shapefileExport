@@ -17,9 +17,13 @@ echo "Your data have been prepared for export.
 Click \"Download file\" below to get your data as a single compressed file.
 ---
 
-If the download button doesn't appear, contact support immediately and send us the following debug data:
+If the download button doesn't appear, [contact support immediately](mailto:support@fedarch.org?subject=ExportDebug&body=" > $4
+cat /tmp/bar >>$4
+cat /tmp/foo >>$4
 
-"  > $4 
+echo ") and send us the following debug data:
+
+"  >> $4 
 
 
 awk '{print "   "$0"\n"}' /tmp/bar >> $4
