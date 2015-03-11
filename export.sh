@@ -9,7 +9,7 @@
 json=`python -mjson.tool $2`
  
 # export database to csv using json inputs and pass output into export file inside download directory
-python shapefile.py $1 $3 $2 > foo
+python shapefile.py $1 $3 $2 > /tmp/bar 2> /tmp/foo
 
 echo "Your data have been prepared for export.
 ---
@@ -19,9 +19,17 @@ Click [\"Download file\"](results/download_file) below to get your data as a sin
 
 If the download button doesn't appear, contact support immediately.
 
-Debug data follows:
-
     "  > $4 
+if [ -s /tmp/foo ]
+	then
+echo "Debug data follows:
+"
+cat /tmp/bar >> $4
+echo " 
+"
+cat /tmp/foo >> $4
+fi
 
-cat foo >> $4
+
+[ ](#bottom)
 # generate markup and pass output to markup file
