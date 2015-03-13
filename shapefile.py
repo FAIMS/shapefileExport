@@ -39,8 +39,89 @@ import imghdr
 
 from collections import defaultdict
 
-
 print sys.argv
+
+class UTF8Recoder:
+    """
+    Iterator that reads an encoded stream and reencodes the input to UTF-8
+    """
+    def __init__(self, f, encoding):
+        self.reader = codecs.getreader(encoding)(f)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return self.reader.next().encode("utf-8")
+
+class UnicodeReader:
+    """
+    A CSV reader which will iterate over lines in the CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        f = UTF8Recoder(f, encoding)
+        self.reader = csv.reader(f, dialect=dialect, **kwds)
+
+    def next(self):
+        row = self.reader.next()
+        return [unicode(s, "utf-8") for s in row]
+
+    def __iter__(self):
+        return self
+
+class UnicodeWriter:
+    """
+    A CSV writer which will write rows to CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        # Redirect output to a queue
+        self.queue = cStringIO.StringIO()
+        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
+        self.stream = f
+        self.encoder = codecs.getincrementalencoder(encoding)()
+
+    def convertBuffer(self, obj):
+		print obj
+		if isinstance(obj, basestring):
+			print obj.replace("\r"," // "), "basestring"
+			return obj.encode("utf-8").replace('"',"''").replace("\r","\n")
+		if isinstance(obj, buffer):			
+			bufferCon = sqlite3.connect(':memory:')
+			bufferCon.enable_load_extension(True)
+			bufferCon.load_extension("libspatialite.so.5")
+			foo = bufferCon.execute("select astext(?);", ([obj])).fetchone()
+			print foo[0]
+			return foo[0]
+		if obj == None:
+			return ""
+		return obj
+
+
+
+    def writerow(self, row):
+        self.writer.writerow(['"%s"' % self.convertBuffer(s).encode("utf-8") for s in row])
+        # Fetch UTF-8 output from the queue ...
+        data = self.queue.getvalue()
+        data = data.decode("utf-8")
+        # ... and reencode it into the target encoding
+        data = self.encoder.encode(data)
+        # write to the target stream
+        self.stream.write(data.replace('"""','"').replace('"None"',''))
+        # empty queue
+        self.queue.truncate(0)
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
+
+
+	
+
+
 
 def dict_factory(cursor, row):
     d = {}
@@ -192,8 +273,8 @@ subprocess.call(["bash", "./format.sh", originalDir, exportDir, exportDir])
 
 updateArray = []
 f= open(exportDir+'shape.out', 'r')
-for line in f.readlines():
-	out = line.replace("\n","").split("\t")
+for line in f.readlines():	
+	out = line.replace("\\r\\n","\n").split("\t")
 	if (len(out) ==4):		
 		update = "update %s set %s = '%s' where uuid = %s;" % (clean(out[1]), clean(out[2]), out[3].replace("'","''"), out[0])
 		exportCon.execute(update)
@@ -300,13 +381,14 @@ for at in importCon.execute("select aenttypename from aenttype"):
 
 	cursor = exportCon.cursor()
 	try:
-		cursor.execute("select *, astext(geospatialcolumn) as geometryAsWKT from %s" % (aenttypename))	
+		cursor.execute("select * from %s" % (aenttypename))	
 	except:
 		cursor.execute("select * from %s" % (aenttypename))		
 
 
 	files.append("Entity-%s.csv" % (aenttypename))
-	csv_writer = csv.writer(open(exportDir+"Entity-%s.csv" % (aenttypename), "wb+"))
+
+	csv_writer = UnicodeWriter(open(exportDir+"Entity-%s.csv" % (aenttypename), "wb+"))
 	csv_writer.writerow([i[0] for i in cursor.description]) # write headers
 	csv_writer.writerows(cursor)
 
@@ -322,7 +404,7 @@ relncursor = importCon.cursor()
 for relntypeid, relntypename in relntypecursor.execute(relntypequery): 
 	relncursor.execute(relnquery, [relntypename])
 	files.append("Relationship-%s.csv" % (clean(relntypename)))
-	csv_writer = csv.writer(open(exportDir+"Relationship-%s.csv" % (clean(relntypename)), "wb+"))
+	csv_writer = UnicodeWriter(open(exportDir+"Relationship-%s.csv" % (clean(relntypename)), "wb+"))
 	csv_writer.writerow([i[0] for i in relncursor.description]) # write headers
 	csv_writer.writerows(relncursor)
 
