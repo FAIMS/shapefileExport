@@ -85,16 +85,14 @@ class UnicodeWriter:
         self.encoder = codecs.getincrementalencoder(encoding)()
 
     def convertBuffer(self, obj):
-		print obj
-		if isinstance(obj, basestring):
-			print obj.replace("\r"," // "), "basestring"
-			return obj.encode("utf-8").replace('"',"''").replace("\r","\n")
+		
+		if isinstance(obj, basestring):			
+			return obj.encode("utf-8").replace('"',"''")
 		if isinstance(obj, buffer):			
 			bufferCon = sqlite3.connect(':memory:')
 			bufferCon.enable_load_extension(True)
 			bufferCon.load_extension("libspatialite.so.5")
-			foo = bufferCon.execute("select astext(?);", ([obj])).fetchone()
-			print foo[0]
+			foo = bufferCon.execute("select astext(?);", ([obj])).fetchone()			
 			return foo[0]
 		if obj == None:
 			return ""
