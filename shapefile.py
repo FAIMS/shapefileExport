@@ -85,9 +85,12 @@ class UnicodeWriter:
         self.encoder = codecs.getincrementalencoder(encoding)()
 
     def convertBuffer(self, obj):
+
+		#print type(obj)		
 		
 		if isinstance(obj, basestring):			
-			return obj.encode("utf-8").replace('"',"''")
+			#print obj.encode("utf-8", errors="replace")
+			return obj.encode("utf-8", errors="replace").replace('"',"''")
 		if isinstance(obj, buffer):			
 			bufferCon = sqlite3.connect(':memory:')
 			bufferCon.enable_load_extension(True)
@@ -96,14 +99,12 @@ class UnicodeWriter:
 			return foo[0]
 		if obj == None:
 			return ""
-		print type(obj)
-		print obj
 		return obj
 
 
 
     def writerow(self, row):
-        self.writer.writerow(['"%s"' % self.convertBuffer(s).encode("utf-8") for s in row])
+        self.writer.writerow(['"%s"' % self.convertBuffer(s) for s in row])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")
