@@ -96,6 +96,8 @@ class UnicodeWriter:
 			return foo[0]
 		if obj == None:
 			return ""
+		print type(obj)
+		print obj
 		return obj
 
 
