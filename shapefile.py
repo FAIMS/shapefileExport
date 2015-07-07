@@ -363,7 +363,7 @@ if images:
 			print "    * %s" % (newFilename)
 			files.append(newFilename+".json")
 			files.append(newFilename)
-		else
+		else:
 			print "<b>Unable to find file %s, from uuid: %s" % (originalDir+filename[1], filename[0]) 
 
 
