@@ -427,7 +427,7 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
 	csv_writer.writerows(relncursor)
 
 
-zipf = zipfile.ZipFile("%s/%s-export.zip" % (finalExportDir,moduleName), 'w', , compress_type=compression, allowZip64=True)
+zipf = zipfile.ZipFile("%s/%s-export.zip" % (finalExportDir,moduleName), 'w', compress_type=compression, allowZip64=True)
 for file in files:
     zipf.write(exportDir+file, moduleName+'/'+file)
 zipf.close()
