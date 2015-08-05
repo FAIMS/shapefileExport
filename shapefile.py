@@ -36,6 +36,8 @@ import glob
 import tempfile
 import errno
 import imghdr
+import bz2
+import tarfile
 
 from collections import defaultdict
 import zipfile
@@ -427,10 +429,13 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
 	csv_writer.writerows(relncursor)
 
 
-zipf = zipfile.ZipFile("%s/%s-export.zip" % (finalExportDir,moduleName), 'w', compress_type=compression, allowZip64=True)
-for file in files:
-    zipf.write(exportDir+file, moduleName+'/'+file)
-zipf.close()
+tarf = tarfile.open("%s/%s-export.tar.bz2" % (finalExportDir,moduleName), 'w:bz2')
+try:
+	for file in files:
+	    tarf.add(exportDir+file, arcname=moduleName+'/'+file)
+finally:
+	tarf.close()
+
 
 try:
     os.remove(exportDir)
