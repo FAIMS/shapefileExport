@@ -38,6 +38,16 @@ import errno
 import imghdr
 
 from collections import defaultdict
+import zipfile
+try:
+    import zlib
+    compression = zipfile.ZIP_DEFLATED
+except:
+    compression = zipfile.ZIP_STORED
+
+modes = { zipfile.ZIP_DEFLATED: 'deflated',
+          zipfile.ZIP_STORED:   'stored',
+          }
 
 print sys.argv
 
@@ -413,7 +423,7 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
 	csv_writer.writerows(relncursor)
 
 
-zipf = zipfile.ZipFile("%s/%s-export.zip" % (finalExportDir,moduleName), 'w')
+zipf = zipfile.ZipFile("%s/%s-export.zip" % (finalExportDir,moduleName), 'w', , compress_type=compression, allowZip64=True)
 for file in files:
     zipf.write(exportDir+file, moduleName+'/'+file)
 zipf.close()
