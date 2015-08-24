@@ -25,7 +25,7 @@ If you see 'Segmentation Fault' in the text below, retry the export.
 
 If the download button doesn't appear, [contact support@fedarch.org immediately](mailto:support@fedarch.org?subject=ExportDebug) and paste the following information into the email:
 
-"  >> $4 
+"  > $4 
 
 
 awk '{print "   "$0"\n"}' /tmp/bar >> $4
