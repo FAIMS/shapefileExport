@@ -286,7 +286,7 @@ subprocess.call(["bash", "./format.sh", originalDir, exportDir, exportDir])
 
 updateArray = []
 
-for line in codecs.open('shape.out', 'r', encoding='utf-8').readlines():	
+for line in codecs.open(exportDir+'shape.out', 'r', encoding='utf-8').readlines():	
 	out = line.replace("\n","").replace("\\r","").split("\t")
 	#print "!!%s -- %s!!" %(line, out)
 	if (len(out) ==4):		
