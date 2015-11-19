@@ -13,10 +13,11 @@ json=`python -mjson.tool $2`
 echo -e "\nTiming data:\n\nExport Started: $(date)" > $4
 command time -o /tmp/timing python shapefile.py $1 $3 $2 > /tmp/bar 2> /tmp/foo
 echo -e "\nExport Finished: $(date)\n" >> $4
-echo -n "    " >> $4
+sed -i 's/^/    /' /tmp/timing
+
 cat /tmp/timing >> $4
 
-echo "\n\n\n**Your data have been prepared for export.**
+echo -e "\n\n\n**Your data have been prepared for export.**
 
 **Click \"Download file\" below to get your data as a single compressed file.**
 
