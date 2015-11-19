@@ -172,10 +172,8 @@ exportDB = exportDir+"shape.sqlite3"
 jsondata = json.load(open(originalDir+'module.settings'))
 srid = jsondata['srid']
 arch16nFiles=[]
-for file in glob.glob(originalDir+"*.properties")
+for file in glob.glob(originalDir+"*.properties"):
 	arch16nFiles.append(file)
-
-
 
 arch16nFile = next((s for s in arch16nFiles if '.0.' in s), arch16nFiles[0])
 # print jsondata
