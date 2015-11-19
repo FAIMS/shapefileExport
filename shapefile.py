@@ -229,10 +229,10 @@ exportCon.execute("create table keyval (key text, val text);")
 
 f = open(arch16nFile, 'r')
 for line in f:
-	
-	keyval = line.replace("\n","").replace("\r","").decode("utf-8").split('=')
-	keyval[0] = '{'+keyval[0]+'}'
-	exportCon.execute("insert into keyval(key, val) VALUES(?, ?)", keyval)
+	if "=" in line:
+		keyval = line.replace("\n","").replace("\r","").decode("utf-8").split('=')
+		keyval[0] = '{'+keyval[0]+'}'
+		exportCon.execute("replace into keyval(key, val) VALUES(?, ?)", keyval)
 f.close()
 
 
