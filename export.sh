@@ -10,9 +10,11 @@ json=`python -mjson.tool $2`
  
 # export database to csv using json inputs and pass output into export file inside download directory
 
-echo "Export Started: $(date)" > $4
-time python shapefile.py $1 $3 $2 > /tmp/bar 2> /tmp/foo
-echo "Export Finished: $(date)" >> $4
+echo -e "\nExport Started: $(date)" > $4
+time -o /tmp/timing python shapefile.py $1 $3 $2 > /tmp/bar 2> /tmp/foo
+echo -e "\nExport Finished: $(date)" >> $4
+
+cat /tmp/tming >> $4
 
 echo "**Your data have been prepared for export.**
 
