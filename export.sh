@@ -9,7 +9,10 @@
 json=`python -mjson.tool $2`
  
 # export database to csv using json inputs and pass output into export file inside download directory
-python shapefile.py $1 $3 $2 > /tmp/bar 2> /tmp/foo
+
+echo "Export Started: $(date)" > $4
+time python shapefile.py $1 $3 $2 > /tmp/bar 2> /tmp/foo
+echo "Export Finished: $(date)" >> $4
 
 echo "**Your data have been prepared for export.**
 
@@ -25,7 +28,8 @@ If you see 'Segmentation Fault' in the text below, retry the export.
 
 If the download button doesn't appear, [contact support@fedarch.org immediately](mailto:support@fedarch.org?subject=ExportDebug) and paste the following information into the email:
 
-"  > $4 
+"  >> $4 
+
 
 
 awk '{print "   "$0"\n"}' /tmp/bar >> $4
