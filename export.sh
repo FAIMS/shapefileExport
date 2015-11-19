@@ -12,7 +12,7 @@ json=`python -mjson.tool $2`
 
 echo -e "\nExport Started: $(date)" > $4
 python shapefile.py $1 $3 $2 > /tmp/bar 2> /tmp/foo
-echo -e "\nExport Finished: $(date)" >> $4
+echo -e "\nExport Finished: $(date)\n" >> $4
 
 cat /tmp/tming >> $4
 
