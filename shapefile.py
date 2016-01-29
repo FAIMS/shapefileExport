@@ -246,14 +246,14 @@ f.close()
 
 
 for aenttypeid, aenttypename in importCon.execute("select aenttypeid, aenttypename from aenttype"):	
-	aenttypename = clean(aenttypename)
+    aenttypename = clean(aenttypename)
 	attributes = ['identifier', 'createdBy', 'createdAtGMT', 'modifiedBy', 'modifiedAtGMT']
 	for attr in importCon.execute("select attributename from attributekey join idealaent using (attributeid) where aenttypeid = ? order by aentcountorder", [aenttypeid]):
 		attrToInsert = clean(attr[0])
 		attributes.append(attrToInsert)
 	attribList = " TEXT, \n\t".join(attributes)
-	createStmt = "Create table %s (\n\tuuid TEXT PRIMARY KEY,\n\t%s TEXT);" % (aenttypename, attribList)
-	
+	createStmt = "Create table if not exists %s (\n\tuuid TEXT PRIMARY KEY,\n\t%s TEXT);" % (aenttypename, attribList)
+
 	exportCon.execute(createStmt)
 
 geometryColumns = []
