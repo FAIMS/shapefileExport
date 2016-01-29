@@ -250,9 +250,9 @@ for aenttypeid, aenttypename in importCon.execute("select aenttypeid, aenttypena
     attributes = ['identifier', 'createdBy', 'createdAtGMT', 'modifiedBy', 'modifiedAtGMT']
     for attr in importCon.execute("select distinct attributename from attributekey join idealaent using (attributeid) where aenttypeid = ? group by attributename order by aentcountorder", [aenttypeid]):
         attrToInsert = clean(attr[0])
-        attributes.append(attrToInsert)
+        if attrToInsert not in attributes:
+            attributes.append(attrToInsert)
     attribList = " TEXT, \n\t".join(attributes)
-    print attribList
     createStmt = "Create table if not exists %s (\n\tuuid TEXT PRIMARY KEY,\n\t%s TEXT);" % (aenttypename, attribList)
 
     exportCon.execute(createStmt)
