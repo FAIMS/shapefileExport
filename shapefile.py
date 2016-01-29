@@ -248,7 +248,7 @@ f.close()
 for aenttypeid, aenttypename in importCon.execute("select aenttypeid, aenttypename from aenttype"): 
     aenttypename = clean(aenttypename)
     attributes = ['identifier', 'createdBy', 'createdAtGMT', 'modifiedBy', 'modifiedAtGMT']
-    for attr in importCon.execute("select unique attributename from attributekey join idealaent using (attributeid) where aenttypeid = ? order by aentcountorder", [aenttypeid]):
+    for attr in importCon.execute("select attributename from attributekey join idealaent using (attributeid) where aenttypeid = ? group by attributename order by aentcountorder", [aenttypeid]):
         attrToInsert = clean(attr[0])
         attributes.append(attrToInsert)
     attribList = " TEXT, \n\t".join(attributes)
