@@ -30,7 +30,7 @@ select uuid, aenttypename, attributename, coalesce(group_concat(response, ''),''
   from (
         select uuid, aenttypeid, aenttypename, coalesce(group_concat(format(formatstring, devocab, measure, freetext, certainty), appendcharacterstring),'') as response, null as deleted, aentcountorder, attributeid, attributename
           from (
-                select uuid, aenttypeid, aenttypename, formatstring, devocab, replace(replace(measure, char(13), '\r'), char(10), '\n') as measure, replace(replace(freetext, char(13), '\r'), char(10), '\n') as freetext, certainty, appendcharacterstring, null as deleted, aentcountorder, vocabcountorder, attributeid, attributename, vocabname
+                select uuid, aenttypeid, aenttypename, replace(replace(formatstring, char(10),''), char(13),'') as formatstring, devocab, replace(replace(measure, char(13), '\r'), char(10), '\n') as measure, replace(replace(freetext, char(13), '\r'), char(10), '\n') as freetext, certainty, appendcharacterstring, null as deleted, aentcountorder, vocabcountorder, attributeid, attributename, vocabname
                   from latestNonDeletedArchent
                   JOIN aenttype using (aenttypeid)
                   JOIN idealaent using (aenttypeid)

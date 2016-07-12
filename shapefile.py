@@ -423,13 +423,30 @@ for at in importCon.execute("select aenttypename from aenttype"):
 
 relntypequery = '''select distinct relntypeid, relntypename from relntype join latestnondeletedrelationship using (relntypeid);'''
 
-relnquery = '''select parent.uuid as fromuuid, child.uuid as touuid, fname || ' ' || lname as username, parent.aentrelntimestamp, parent.participatesverb from (select * from latestnondeletedaentreln join relationship using (relationshipid)  where relationshipid in (select relationshipid from relationship join relntype using (relntypeid) where relntypename = ?)) parent join (latestnondeletedaentreln join relationship using (relationshipid)) child on (parent.relationshipid = child.relationshipid and parent.uuid != child.uuid)  join user using (userid)'''
+relnquery = '''select parent.uuid as fromuuid, child.uuid as touuid, parent.aentrelntimestamp, parent.participatesverb 
+                 from (select * from latestnondeletedaentreln) parent join (select * from latestnondeletedaentreln) child using (relationshipid)
+                 join relationship using (relationshipid)
+                 join relntype using (relntypeid)
+                 where child.uuid != parent.uuid
+                 and relntypename = ?
+                 and ()
+
+                 from (select * 
+                         from latestnondeletedaentreln 
+                         join relationship using (relationshipid)  
+                        where relationshipid in (select relationshipid 
+                        from relationship join relntype using (relntypeid) where relntypename = ?)) parent join (latestnondeletedaentreln join relationship using (relationshipid)) child on (parent.relationshipid = child.relationshipid and parent.uuid != child.uuid)  join user using (userid)'''
 
 
 relntypecursor = importCon.cursor()
 relncursor = importCon.cursor()
 for relntypeid, relntypename in relntypecursor.execute(relntypequery): 
     relncursor.execute(relnquery, [relntypename])
+
+    exportCon.execute("CREATE TABLE %s (parentuuid TEXT, childuuid TEXT, participatesverb TEXT);" % (clean(relntypename)))
+    for i in relncursor:
+        exportCon.execute("INSERT INTO %s VALUES(?,?,?)" % (clean(relntypename)), i)
+        
     files.append("Relationship-%s.csv" % (clean(relntypename)))
     csv_writer = UnicodeWriter(open(exportDir+"Relationship-%s.csv" % (clean(relntypename)), "wb+"))
     csv_writer.writerow([i[0] for i in relncursor.description]) # write headers
