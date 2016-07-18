@@ -425,19 +425,19 @@ for at in importCon.execute("select aenttypename from aenttype"):
 
 relntypequery = '''select distinct relntypeid, relntypename from relntype join latestnondeletedrelationship using (relntypeid);'''
 
-relnquery = '''select parent.uuid as fromuuid, child.uuid as touuid, parent.aentrelntimestamp, parent.participatesverb 
-                 from (select * from latestnondeletedaentreln) parent join (select * from latestnondeletedaentreln) child using (relationshipid)
-                 join relationship using (relationshipid)
-                 join relntype using (relntypeid)
-                 where child.uuid != parent.uuid
-                 and relntypename = ?
-                 and ()
-
+relnquery = '''select parent.uuid as fromuuid, child.uuid as touuid, fname || ' ' || lname as username, parent.aentrelntimestamp, parent.participatesverb 
                  from (select * 
-                         from latestnondeletedaentreln 
-                         join relationship using (relationshipid)  
-                        where relationshipid in (select relationshipid 
-                        from relationship join relntype using (relntypeid) where relntypename = ?)) parent join (latestnondeletedaentreln join relationship using (relationshipid)) child on (parent.relationshipid = child.relationshipid and parent.uuid != child.uuid)  join user using (userid)'''
+                        from latestnondeletedaentreln 
+                        join relationship using (relationshipid)  
+                       where relationshipid in (select relationshipid 
+                                                  from relationship 
+                                                  join relntype using (relntypeid) 
+                                                 where relntypename = ?)
+                      ) parent 
+                 join (latestnondeletedaentreln 
+                       join relationship using (relationshipid)
+                       ) child on (parent.relationshipid = child.relationshipid and parent.uuid != child.uuid)  
+                 join user using (userid)'''
 
 
 relntypecursor = importCon.cursor()
