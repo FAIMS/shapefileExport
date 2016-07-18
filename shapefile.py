@@ -425,7 +425,7 @@ for at in importCon.execute("select aenttypename from aenttype"):
 
 relntypequery = '''select distinct relntypeid, relntypename from relntype join latestnondeletedrelationship using (relntypeid);'''
 
-relnquery = '''select parent.uuid as fromuuid, child.uuid as touuid, fname || ' ' || lname as username, parent.aentrelntimestamp, parent.participatesverb 
+relnquery = '''select parent.uuid as fromuuid, child.uuid as touuid, parent.participatesverb 
                  from (select * 
                         from latestnondeletedaentreln 
                         join relationship using (relationshipid)  
@@ -443,7 +443,6 @@ relnquery = '''select parent.uuid as fromuuid, child.uuid as touuid, fname || ' 
 relntypecursor = importCon.cursor()
 relncursor = importCon.cursor()
 for relntypeid, relntypename in relntypecursor.execute(relntypequery): 
-    print relnquery, relntypename
     relncursor.execute(relnquery, [relntypename])
     exportCon.execute("CREATE TABLE %s (parentuuid TEXT, childuuid TEXT, participatesverb TEXT);" % (clean(relntypename)))
     for i in relncursor:
