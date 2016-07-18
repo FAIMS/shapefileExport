@@ -444,7 +444,7 @@ relntypecursor = importCon.cursor()
 relncursor = importCon.cursor()
 for relntypeid, relntypename in relntypecursor.execute(relntypequery): 
     relncursor.execute(relnquery, [relntypename])
-
+    print relnquery, relntypename
     exportCon.execute("CREATE TABLE %s (parentuuid TEXT, childuuid TEXT, participatesverb TEXT);" % (clean(relntypename)))
     for i in relncursor:
         exportCon.execute("INSERT INTO %s VALUES(?,?,?)" % (clean(relntypename)), i)
