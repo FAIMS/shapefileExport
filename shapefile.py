@@ -449,6 +449,7 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
         exportCon.execute("INSERT INTO %s VALUES(?,?,?)" % (clean(relntypename)), i)
         
     files.append("Relationship-%s.csv" % (clean(relntypename)))
+    relncursor.execute(relnquery, [relntypename])
     csv_writer = UnicodeWriter(open(exportDir+"Relationship-%s.csv" % (clean(relntypename)), "wb+"))
     csv_writer.writerow([i[0] for i in relncursor.description]) # write headers
     csv_writer.writerows(relncursor)
