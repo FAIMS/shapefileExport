@@ -338,7 +338,8 @@ exportCon.commit()
 files = ['shape.sqlite3']
 
 if (overrideFormattedIdentifiers):
-    files.append('override.sqlite3')
+    files.append('override.out')
+    files.append('shape.out')
 
 
 if images:
