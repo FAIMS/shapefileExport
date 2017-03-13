@@ -1,6 +1,6 @@
 {
   "name":"Generalised Exporter",
-  "version":60,
+  "version":61,
   "key":"e6485af4-6e05-11e4-8c49-3c970e0cc7d6",
   "interface":[
   {
@@ -12,10 +12,11 @@
       "default":"Please include images"
     },
     {
-      "type":"checkbox",
-      "label":"Export unformatted identifier columns in addition to formatted?",
+      "type":"dropdown",
+      "label":"Export unformatted identifier columns in addition to formatted? If you are unsure what this means, leave the setting as is.",
       "items":[
-        "Yes"           
+        "Yes",
+        "No"           
       ],
       "default":"Yes"
     }
