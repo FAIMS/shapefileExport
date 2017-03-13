@@ -12,11 +12,11 @@
       "default":"Please include images"
     },
     {
-      "type":"dropdown",
+      "type":"checkbox",
       "label":"Export unformatted identifier columns in addition to formatted (if you are unsure what this means, please leave the setting as is)?",
       "items":[
-        {"Yes":"yes"},
-        {"No":"no"}
+        "Yes"
+        
       ],
       "default":"Yes"
     }
