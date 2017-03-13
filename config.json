@@ -1,6 +1,6 @@
 {
   "name":"Generalised Exporter",
-  "version":59,
+  "version":60,
   "key":"e6485af4-6e05-11e4-8c49-3c970e0cc7d6",
   "interface":[
   {
@@ -13,10 +13,11 @@
     },
     {
       "type":"checkbox",
-      "label":"Export unformatted columns in addition to formatted?",
+      "label":"Export unformatted identifier columns in addition to formatted?",
       "items":[
-        "Unformatted"           
-      ]
+        "Yes"           
+      ],
+      "default":"Yes"
     }
   ]
 }

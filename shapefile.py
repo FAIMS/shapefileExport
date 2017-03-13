@@ -202,7 +202,7 @@ try:
     else:
         images = False
 
-    if (foo["Export unformatted columns in addition to formatted?"] != []):
+    if (foo["Export unformatted identifier columns in addition to formatted? If you are unsure what this means, leave the setting as is."] != []):
         overrideFormattedIdentifiers = True
     else:
         overrideFormattedIdentifiers = False
