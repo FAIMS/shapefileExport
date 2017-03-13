@@ -1,6 +1,6 @@
 {
   "name":"Generalised Exporter",
-  "version":64,
+  "version":65,
   "key":"e6485af4-6e05-11e4-8c49-3c970e0cc7d6",
   "interface":[
   {
@@ -13,11 +13,10 @@
     },
     {
       "type":"checkbox",
-      "label":"Export unformatted identifier columns in addition to formatted (if you are unsure what this means, please leave the setting as is)?",
+      "label":"Export identifier components in plain as well as formatted state (if in doubt, leave the setting as is)?",
       "items":[
-        "No"
-        
-      ]
+        "No, I wish to skip plain identifier components"
+     ]
     }
   ]
 }

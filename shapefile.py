@@ -202,7 +202,7 @@ try:
     else:
         images = False
     # Ugh. But the interface is buggy.
-    if (foo["Export unformatted identifier columns in addition to formatted (if you are unsure what this means, please leave the setting as is)?"] != []):
+    if (foo["Export identifier components in plain as well as formatted state (if in doubt, leave the setting as is)?"] != []):
         overrideFormattedIdentifiers = False
     else:
         overrideFormattedIdentifiers = True
