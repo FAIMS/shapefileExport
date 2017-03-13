@@ -1,6 +1,6 @@
 {
   "name":"Generalised Exporter",
-  "version":55,
+  "version":56,
   "key":"e6485af4-6e05-11e4-8c49-3c970e0cc7d6",
   "interface":[
   {
@@ -10,5 +10,13 @@
         "Please include images"           
       ],
       "default":"Please include images"
-    }]
+    },
+    {
+      "type":"checkbox",
+      "label":"Export unformatted columns in addition to formatted?",
+      "items":[
+        "Unformatted"           
+      ]
+    }
+  ]
 }

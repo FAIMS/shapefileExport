@@ -193,6 +193,7 @@ else:
 
 
 images = None
+overrideFormattedIdentifiers = None
 try:
     foo= json.load(open(sys.argv[3],"r"))
     # print foo["Export Images and Files?"]
@@ -200,11 +201,17 @@ try:
         images = True
     else:
         images = False
+
+    if (foo["Export unformatted columns in addition to formatted?"] != []):
+        overrideFormattedIdentifiers = True
+    else:
+        overrideFormattedIdentifiers = False
 except:
     sys.stderr.write("Json input failed")
     images = True
 
 print "Exporting Images %s" % (images)
+print "Overwriting Identifier FormatStrings %s" % (overrideFormattedIdentifiers)
 
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
@@ -314,9 +321,24 @@ for line in codecs.open(exportDir+'shape.out', 'r', encoding='utf-8').readlines(
 
 
 
+if (overrideFormattedIdentifiers):
+    subprocess.call(["bash", "./override.sh", originalDir, exportDir, exportDir])
+
+    for line in codecs.open(exportDir+'override.out', 'r', encoding='utf-8').readlines():  
+        out = line.replace("\n","").replace("\\r","").split("\t")
+        #print "!!%s -- %s!!" %(line, out)
+        if (len(out) ==4):      
+            update = "update %s set %s = ? where uuid = %s;" % (clean(out[1]), clean(out[2]), out[0])
+            data = (unicode(out[3].replace("\\n","\n").replace("'","''")),)
+            # print update, data
+            exportCon.execute(update, data)
+
 
 exportCon.commit()
 files = ['shape.sqlite3']
+
+if (overrideFormattedIdentifiers):
+    files.append('override.sqlite3')
 
 
 if images:
