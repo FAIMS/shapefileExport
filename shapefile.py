@@ -202,7 +202,7 @@ try:
     else:
         images = False
 
-    if (foo["Export unformatted identifier columns in addition to formatted? If you are unsure what this means, leave the setting as is."] != []):
+    if (foo["Export unformatted identifier columns in addition to formatted (if you are unsure what this means, please leave the setting as is)?"] != []):
         overrideFormattedIdentifiers = True
     else:
         overrideFormattedIdentifiers = False
@@ -212,7 +212,7 @@ except:
 
 print "Exporting Images %s" % (images)
 print "Overwriting Identifier FormatStrings %s" % (overrideFormattedIdentifiers)
-
+print foo
 def zipdir(path, zip):
     for root, dirs, files in os.walk(path):
         for file in files:
