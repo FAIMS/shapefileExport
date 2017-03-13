@@ -15,10 +15,9 @@
       "type":"checkbox",
       "label":"Export unformatted identifier columns in addition to formatted (if you are unsure what this means, please leave the setting as is)?",
       "items":[
-        "Yes"
+        "No"
         
-      ],
-      "default":"Yes"
+      ]
     }
   ]
 }

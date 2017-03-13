@@ -201,11 +201,11 @@ try:
         images = True
     else:
         images = False
-
+    # Ugh. But the interface is buggy.
     if (foo["Export unformatted identifier columns in addition to formatted (if you are unsure what this means, please leave the setting as is)?"] != []):
-        overrideFormattedIdentifiers = True
-    else:
         overrideFormattedIdentifiers = False
+    else:
+        overrideFormattedIdentifiers = True
 except:
     sys.stderr.write("Json input failed")
     images = True
