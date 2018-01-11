@@ -1,7 +1,9 @@
 # About this exporter:
-This exporter was created for the previous version of FAIMS (v1.0) and in later versions became a core-part of the ‘Generalised Exporter’, the default exporter of the **FAIMS Mobile** server. The exporter outputs geospatial data (points, lines, polygons) in the form of Shapefile, together with associated metadata and relations. 
+This exporter was created for the previous version of FAIMS (v1.0) and in later versions became a core-part of the ‘Generalised Exporter’, the default exporter of the **FAIMS Mobile** server. The exporter outputs geospatial data (points, lines, polygons) in the form of Shapefile, together with associated metadata and relations.
+
 ## Authorship:
 This exporter was co-developed by Brian Ballsun-Stanton at the FAIMS Project, Department of Ancient History, Macquarie University.
+
 ## Funding:
 Development of this module was funded by ARC LE140100151, FAIMS: Transforming archaeological research through digital technologies
 
@@ -10,6 +12,7 @@ Development of this module was funded by ARC LE140100151, FAIMS: Transforming ar
 
 ## FAIMS Mobile / server version:
 FAIMS **v1.0** (Android 4+)
+
 ## Licence:
 This exporter is licensed under an international Creative Commons Attribution 4.0 Licence (**CC BY 4.0**).
 
@@ -20,8 +23,8 @@ This exporter can be downloaded directly from this repository and used on FAIMS 
 1. Upload the tarball to the server through the plugins interface (for details, see below)
 
 ## This exporter contains the following features:
-* exports geospatial data as shapefile
-* exports associated metadata and related records
+* Exports geospatial data as shapefile
+* Exports associated metadata and related records
 
 ## Exporter Use Recommendations:
 * Immediate field use with any module containing geospatial data
