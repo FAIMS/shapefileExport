@@ -436,7 +436,8 @@ shapeCon = sqlite3.connect(shapeDB)
 shapeCon.enable_load_extension(True)
 shapeCon.load_extension(LIBSPATIALITE)
 
-shapeCon.execute("drop view latestNonDeletedArchEntFormattedIdentifiers;")
+
+shapeCon.execute("drop view if exists latestNonDeletedArchEntFormattedIdentifiers;")
 shapeCon.execute("""
 CREATE VIEW latestNonDeletedArchEntFormattedIdentifiers as 
 select uuid, aenttypeid, aenttypename, group_concat(response, '') as response, null as deleted 
