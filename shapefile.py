@@ -301,6 +301,7 @@ for aenttypename, uuid, createdAt, createdBy, modifiedAt, modifiedBy,geometry in
 
 try:
     os.remove(exportDir+'shape.out')
+    os.remove(exportDir+'noannotation.out')
 except OSError:
     pass
 
@@ -431,7 +432,7 @@ if images:
 
 
 for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
-    cmd = ["spatialite_tool", "-e", "-shp", "%s" % (clean(row[0]).decode("ascii")), "-d", "%sshape.sqlite3" % (exportDir), "-t", "%s" % (clean(row[0])), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
+    cmd = ["spatialite_tool", "-e", "-shp", "%s" % (clean(row[0]).decode("ascii")), "-d", "%snoannotation.sqlite3" % (exportDir), "-t", "%s" % (clean(row[0])), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
     files.append("%s.dbf" % (clean(row[0])))
     files.append("%s.shp" % (clean(row[0])))
     files.append("%s.shx" % (clean(row[0])))
