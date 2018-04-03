@@ -173,6 +173,7 @@ exportDir = tempfile.mkdtemp()+"/"
 finalExportDir = sys.argv[2]+"/"
 importDB = originalDir+"db.sqlite3"
 exportDB = exportDir+"shape.sqlite3"
+shapeDB = exportDir+"noannotation.sqlite3"
 jsondata = json.load(open(originalDir+'module.settings'))
 srid = jsondata['srid']
 arch16nFiles=[]
@@ -230,6 +231,9 @@ importCon.load_extension(LIBSPATIALITE)
 exportCon = sqlite3.connect(exportDB)
 exportCon.enable_load_extension(True)
 exportCon.load_extension(LIBSPATIALITE)
+shapeCon = sqlite3.connect(shapeDB)
+shapeCon.enable_load_extension(True)
+shapeCon.load_extension(LIBSPATIALITE)
 
 
 exportCon.execute("select initSpatialMetaData(1)")
@@ -428,7 +432,30 @@ if images:
 
     # check input flag as to what filename to export
 
+shutil.copyfile(exportDir+exportDB, exportDir+shapeDB)
 
+shapeCon.execute("drop view latestNonDeletedArchEntFormattedIdentifiers;")
+shapeCon.execute("""
+CREATE VIEW latestNonDeletedArchEntFormattedIdentifiers as 
+select uuid, aenttypeid, aenttypename, group_concat(response, '') as response, null as deleted 
+from ( 
+  select uuid, aenttypeid, aenttypename, group_concat(format(formatstring, vocabname, measure, null, null), appendcharacterstring) as response, null as deleted, aentcountorder 
+  from ( 
+    select uuid, aenttypeid, aenttypename, replace(replace(formatstring, char(10),''), char(13),'') as formatstring, vocabname, replace(replace(measure, char(13), '\r'), char(10), '\n') as measure, replace(replace(freetext, char(13), '\r'), char(10), '\n') as freetext, certainty, appendcharacterstring, null as deleted, aentcountorder, vocabcountorder, attributeid 
+    from latestNonDeletedArchent 
+      JOIN aenttype using (aenttypeid) 
+      JOIN (select * from idealaent where isIdentifier='true') using (aenttypeid) 
+      join attributekey  using (attributeid) 
+      left outer join latestNonDeletedAentValue using (uuid, attributeid) 
+      left outer join vocabulary using (attributeid, vocabid) 
+    order by uuid, aentcountorder, vocabcountorder 
+  ) 
+  group by uuid, attributeid 
+  having response is not null 
+  order by uuid, aentcountorder) 
+group by uuid 
+order by uuid;
+""");
 
 
 for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
