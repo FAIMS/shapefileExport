@@ -339,7 +339,7 @@ if (overrideFormattedIdentifiers):
 
 
 exportCon.commit()
-files = ['shape.sqlite3']
+files = ['shape.sqlite3', 'noannotation.sqlite3']
 
 if (overrideFormattedIdentifiers):
     files.append('override.out')
