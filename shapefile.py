@@ -231,9 +231,7 @@ importCon.load_extension(LIBSPATIALITE)
 exportCon = sqlite3.connect(exportDB)
 exportCon.enable_load_extension(True)
 exportCon.load_extension(LIBSPATIALITE)
-shapeCon = sqlite3.connect(shapeDB)
-shapeCon.enable_load_extension(True)
-shapeCon.load_extension(LIBSPATIALITE)
+
 
 
 exportCon.execute("select initSpatialMetaData(1)")
@@ -432,7 +430,11 @@ if images:
 
     # check input flag as to what filename to export
 
-shutil.copyfile(exportDir+exportDB, exportDir+shapeDB)
+shutil.copyfile(exportDB, shapeDB)
+
+shapeCon = sqlite3.connect(shapeDB)
+shapeCon.enable_load_extension(True)
+shapeCon.load_extension(LIBSPATIALITE)
 
 shapeCon.execute("drop view latestNonDeletedArchEntFormattedIdentifiers;")
 shapeCon.execute("""
