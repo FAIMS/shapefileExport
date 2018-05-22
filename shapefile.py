@@ -348,7 +348,10 @@ if (overrideFormattedIdentifiers):
     files.append('shape.out')
 
 
+
+
 if images:
+    attachedfiledump = []
     for directory in importCon.execute("select distinct aenttypename, attributename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
         makeSurePathExists("%s/%s/%s" % (exportDir,clean(directory[0]), clean(directory[1])))
 
@@ -430,6 +433,11 @@ if images:
                 print "    * %s" % (newFilename)
                 files.append(newFilename+".json")
                 files.append(newFilename)
+                attachedfiledump.append({"uuid":filename[0], 
+                          "aenttype": aenttypename,
+                          "attribute": attributename,
+                          "newFilename":newFilename,
+                          "mimeType":mime.from_file(originalDir+filename[1])})
             else:
                 print "<b>Unable to find file %s, from uuid: %s" % (originalDir+filename[1], filename[0]) 
         except Exception as e:
@@ -441,7 +449,9 @@ if images:
         for attribute in outputFilename[uuid]:
             exportCon.execute("update %s set %s = ? where uuid = ?" % (outputAent[uuid], attribute), (json.dumps(outputFilename[uuid][attribute]) , uuid))
 
-
+    files.append("attachedfiledump.csv")
+    csv_writer = UnicodeWriter(open(exportDir+"attachedfiledump.csv", "wb+"))
+    csv_writer.writerows(attachedfiledump)
     # check input flag as to what filename to export
 
 shutil.copyfile(exportDB, shapeDB)
@@ -501,6 +511,8 @@ for at in importCon.execute("select aenttypename from aenttype"):
     csv_writer.writerows(cursor)
 
     #spatialite_tool -e -shp surveyUnitTransectBuffer -d db.sqlite3 -t surveyUnitWithTransectBuffer -c utf-8 -g surveyBuffer --type polygon
+
+
 
 relntypequery = '''select distinct relntypeid, relntypename from relntype join latestnondeletedrelationship using (relntypeid);'''
 
