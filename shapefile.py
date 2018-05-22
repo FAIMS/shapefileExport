@@ -40,6 +40,7 @@ import bz2
 import tarfile
 import platform
 import lsb_release
+import mimetypes, magic
 
 from collections import defaultdict
 import zipfile
@@ -352,8 +353,9 @@ if images:
 
     filehash = defaultdict(int)
 
-
-
+    outputFilename = []
+    outputAent = []
+    mime = magic.Magic(mime=True)
     print "* File list exported:"
     for filename in importCon.execute("select uuid, measure, freetext, certainty, attributename, aenttypename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
         try:        
@@ -413,9 +415,16 @@ if images:
                 if imghdr.what(exportDir+newFilename):
                     
                     subprocess.call(["exiftool", "-m", "-q", "-sep", "\"; \"", "-overwrite_original", "-j=%s" % (exportDir+newFilename+".json"), exportDir+newFilename])
+                if filename[0] not in outputFilename:
+                    outputFilename[filename[0]] = []
+                if attributename not in outputFilename[filename[0]]:
+                    outputFilename[filename[0]][attributename] = []
 
-
-                exportCon.execute("update %s set %s = ? where uuid = ?" % (aenttypename, attributename), (newFilename, filename[0]))
+                outputAent[filename[0]] = aenttypename
+                outputFilename[filename[0]][attributename].append({"newFilename":newFilename,
+                                                                   "mimeType":mime.from_file(originalDir+filename[1])
+                                                                   })
+                
                 print "    * %s" % (newFilename)
                 files.append(newFilename+".json")
                 files.append(newFilename)
@@ -424,8 +433,9 @@ if images:
         except:
                 print "<b>Unable to find file (exception thrown) %s, from uuid: %s" % (originalDir+filename[1], filename[0])    
 
-
-
+    for uuid in outputFilename:
+        for attribute in outputFilename[uuid]:
+            exportCon.execute("update %s set %s = ? where uuid = ?" % (outputAent[uuid], json.dumps(outputFilename[uuid][attribute])), (json.dumps , uuid))
 
 
     # check input flag as to what filename to export
