@@ -451,7 +451,9 @@ if images:
 
     files.append("attachedfiledump.csv")
     csv_writer = UnicodeWriter(open(exportDir+"attachedfiledump.csv", "wb+"))
-    csv_writer.writerows(attachedfiledump)
+    csv_writer.writerow(attachedfiledump)
+    for row in attachedfiledump:
+        csv_writer.writerow(attachedfiledump[row])
     # check input flag as to what filename to export
 
 shutil.copyfile(exportDB, shapeDB)
