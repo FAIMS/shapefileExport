@@ -430,8 +430,8 @@ if images:
                 files.append(newFilename)
             else:
                 print "<b>Unable to find file %s, from uuid: %s" % (originalDir+filename[1], filename[0]) 
-        except:
-                print "<b>Unable to find file (exception thrown) %s, from uuid: %s" % (originalDir+filename[1], filename[0])    
+        except Exception as e:
+                print "<b>Unable to find file (exception thrown) %s, from uuid: %s. Exception: %s" % (originalDir+filename[1], filename[0], e)    
 
     for uuid in outputFilename:
         for attribute in outputFilename[uuid]:
