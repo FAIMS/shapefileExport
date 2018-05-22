@@ -354,8 +354,8 @@ if images:
 
     filehash = defaultdict(int)
 
-    outputFilename = []
-    outputAent = []
+    outputFilename =defaultdict(int)
+    outputAent = defaultdict(int)
     mime = magic.Magic(mime=True)
     print "* File list exported:"
     for filename in importCon.execute("select uuid, measure, freetext, certainty, attributename, aenttypename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
