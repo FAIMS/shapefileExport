@@ -417,14 +417,14 @@ if images:
                     
                     subprocess.call(["exiftool", "-m", "-q", "-sep", "\"; \"", "-overwrite_original", "-j=%s" % (exportDir+newFilename+".json"), exportDir+newFilename])
                 if filename[0] not in outputFilename:
-                    outputFilename[filename[0]] = []
+                    outputFilename[filename[0]] = {}
                 if attributename not in outputFilename[filename[0]]:
                     outputFilename[filename[0]][attributename] = []
 
                 outputAent[filename[0]] = aenttypename
-                outputFilename[filename[0]][attributename].append({"newFilename":newFilename,
+                outputFilename[filename[0]][attributename][filehash["%s%s" % (filename[0], attributename)]] = {"newFilename":newFilename,
                                                                    "mimeType":mime.from_file(originalDir+filename[1])
-                                                                   })
+                                                                   }
                 
                 print "    * %s" % (newFilename)
                 files.append(newFilename+".json")
