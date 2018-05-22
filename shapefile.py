@@ -419,8 +419,9 @@ if images:
                 if filename[0] not in outputFilename:
                     outputFilename[filename[0]] = {}
                 if attributename not in outputFilename[filename[0]]:
-                    outputFilename[filename[0]][attributename] = []
-
+                    outputFilename[filename[0]][attributename] = {}
+                if filehash["%s%s" % (filename[0], attributename)]  not in outputFilename[filename[0]][attributename]:
+                    outputFilename[filename[0]][attributename][filehash["%s%s" % (filename[0], attributename)]] = {}                    
                 outputAent[filename[0]] = aenttypename
                 outputFilename[filename[0]][attributename][filehash["%s%s" % (filename[0], attributename)]] = {"newFilename":newFilename,
                                                                    "mimeType":mime.from_file(originalDir+filename[1])
