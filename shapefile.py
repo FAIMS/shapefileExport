@@ -41,6 +41,7 @@ import tarfile
 import platform
 import lsb_release
 import mimetypes, magic
+import traceback
 
 from collections import defaultdict
 import zipfile
@@ -431,11 +432,13 @@ if images:
             else:
                 print "<b>Unable to find file %s, from uuid: %s" % (originalDir+filename[1], filename[0]) 
         except Exception as e:
-                print "<b>Unable to find file (exception thrown) %s, from uuid: %s. Exception: %s" % (originalDir+filename[1], filename[0], e)    
+           
+
+            print "<b>Unable to find file (exception thrown) %s, from uuid: %s. Exception: %s" % (originalDir+filename[1], filename[0], traceback.format_exc())    
 
     for uuid in outputFilename:
         for attribute in outputFilename[uuid]:
-            exportCon.execute("update %s set %s = ? where uuid = ?" % (outputAent[uuid], json.dumps(outputFilename[uuid][attribute])), (json.dumps , uuid))
+            exportCon.execute("update %s set %s = ? where uuid = ?" % (outputAent[uuid], attribute), (json.dumps(outputFilename[uuid][attribute]) , uuid))
 
 
     # check input flag as to what filename to export
