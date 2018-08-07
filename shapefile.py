@@ -550,7 +550,7 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
     csv_writer.writerow([i[0] for i in relncursor.description]) # write headers
     csv_writer.writerows(relncursor)
 
-files = glob.glob('{}/.*'.format(exportDir))
+files = glob.glob("{}/*.*".format(exportDir))
 pprint(files)
 tarf = tarfile.open("%s/%s-export.tar.bz2" % (finalExportDir,moduleName), 'w:bz2')
 try:
