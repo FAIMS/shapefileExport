@@ -555,7 +555,7 @@ pprint(files)
 tarf = tarfile.open("%s/%s-export.tar.bz2" % (finalExportDir,moduleName), 'w:bz2')
 try:
     for file in files:
-        tarf.add(file, arcname=moduleName+'/'+file)
+        tarf.add(file, arcname=moduleName+'/'+os.path.relpath(file, exportdir))
 finally:
     tarf.close()
 
