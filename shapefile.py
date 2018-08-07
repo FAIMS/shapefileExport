@@ -42,8 +42,9 @@ import platform
 import lsb_release
 import mimetypes, magic
 import traceback
-
+import glob
 from collections import defaultdict
+from pprint import pprint
 import zipfile
 try:
     import zlib
@@ -343,9 +344,9 @@ if (overrideFormattedIdentifiers):
 exportCon.commit()
 files = ['shape.sqlite3', 'noannotation.sqlite3']
 
-if (overrideFormattedIdentifiers):
-    files.append('override.out')
-    files.append('shape.out')
+# if (overrideFormattedIdentifiers):
+#     files.append('override.out')
+#     files.append('shape.out')
 
 
 
@@ -431,8 +432,8 @@ if images:
                                                                    }
                 
                 print "    * %s" % (newFilename)
-                files.append(newFilename+".json")
-                files.append(newFilename)
+                # files.append(newFilename+".json")
+                # files.append(newFilename)
                 attachedfiledump.append({"uuid":filename[0], 
                           "aenttype": aenttypename,
                           "attribute": attributename,
@@ -449,7 +450,7 @@ if images:
         for attribute in outputFilename[uuid]:
             exportCon.execute("update %s set %s = ? where uuid = ?" % (outputAent[uuid], attribute), (json.dumps(outputFilename[uuid][attribute]) , uuid))
 
-    files.append("attachedfiledump.csv")
+    # files.append("attachedfiledump.csv")
     csv_writer = UnicodeWriter(open(exportDir+"attachedfiledump.csv", "wb+"))
     csv_writer.writerow(["uuid", "aenttype", "attribute", "filename", "mimeType"])
     for row in attachedfiledump:
@@ -490,9 +491,10 @@ order by uuid;
 
 for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
     cmd = ["spatialite_tool", "-e", "-shp", "%s" % (clean(row[0]).decode("ascii")), "-d", "%snoannotation.sqlite3" % (exportDir), "-t", "%s" % (clean(row[0])), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
-    files.append("%s.dbf" % (clean(row[0])))
-    files.append("%s.shp" % (clean(row[0])))
-    files.append("%s.shx" % (clean(row[0])))
+
+    # files.append("%s.dbf" % (clean(row[0])))
+    # files.append("%s.shp" % (clean(row[0])))
+    # files.append("%s.shx" % (clean(row[0])))
     # print cmd
     subprocess.call(cmd, cwd=exportDir)
 
@@ -507,7 +509,7 @@ for at in importCon.execute("select aenttypename from aenttype"):
         cursor.execute("select * from %s" % (aenttypename))     
 
 
-    files.append("Entity-%s.csv" % (aenttypename))
+    # files.append("Entity-%s.csv" % (aenttypename))
 
     csv_writer = UnicodeWriter(open(exportDir+"Entity-%s.csv" % (aenttypename), "wb+"))
     csv_writer.writerow([i[0] for i in cursor.description]) # write headers
@@ -542,13 +544,14 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
     for i in relncursor:
         exportCon.execute("INSERT INTO %s VALUES(?,?,?)" % (clean(relntypename)), i)
         
-    files.append("Relationship-%s.csv" % (clean(relntypename)))
+    # files.append("Relationship-%s.csv" % (clean(relntypename)))
     relncursor.execute(relnquery, [relntypename])
     csv_writer = UnicodeWriter(open(exportDir+"Relationship-%s.csv" % (clean(relntypename)), "wb+"))
     csv_writer.writerow([i[0] for i in relncursor.description]) # write headers
     csv_writer.writerows(relncursor)
 
-
+files = glob.glob('{}/.*'.format(exportDir))
+pprint(files)
 tarf = tarfile.open("%s/%s-export.tar.bz2" % (finalExportDir,moduleName), 'w:bz2')
 try:
     for file in files:
