@@ -43,11 +43,8 @@ import lsb_release
 import mimetypes, magic
 import traceback
 import glob
-from shapely.wkb import dumps, loads
 from collections import defaultdict
 from pprint import pprint
-from fastkml import kml
-from shapely.geometry import Point, LineString, Polygon, MultiGeometry
 import zipfile
 try:
     import zlib
@@ -253,7 +250,7 @@ exifCon = sqlite3.connect(exportDB)
 exifCon.row_factory = dict_factory
 exportCon.enable_load_extension(True)
 exportCon.load_extension(LIBSPATIALITE)
-exportCon.row_factory = dict_factory
+
 
   
 exportCon.execute("create table keyval (key text, val text);")
@@ -380,7 +377,7 @@ if images:
                     
 
                     foo = exportCon.execute("select identifier from %s where uuid = %s" % (aenttypename, filename[0]))
-                    identifier=cleanWithUnder(foo.fetchone()['identifier'])
+                    identifier=cleanWithUnder(foo.fetchone()[0])
 
                     r= re.search("(\.[^.]*)$",oldFilename)
 
@@ -492,42 +489,14 @@ shapeCon.load_extension(LIBSPATIALITE)
 # """);
 
 
-# for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
-#     cmd = ["spatialite_tool", "-e", "-shp", "%s" % (clean(row[0]).decode("ascii")), "-d", "%snoannotation.sqlite3" % (exportDir), "-t", "%s" % (clean(row[0])), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
+for row in importCon.execute("select aenttypename, geometrytype(geometryn(geospatialcolumn,1)) as geomtype, count(distinct geometrytype(geometryn(geospatialcolumn,1))) from latestnondeletedarchent join aenttype using (aenttypeid) where geomtype is not null group by aenttypename having  count(distinct geometrytype(geometryn(geospatialcolumn,1))) = 1"):
+    cmd = ["spatialite_tool", "-e", "-shp", "%s" % (clean(row[0]).decode("ascii")), "-d", "%snoannotation.sqlite3" % (exportDir), "-t", "%s" % (clean(row[0])), "-c", "utf-8", "-g", "geospatialcolumn", "-s", "%s" % (srid), "--type", "%s" % (row[1])]
 
-#     files.append("%s.dbf" % (clean(row[0])))
-#     files.append("%s.shp" % (clean(row[0])))
-#     files.append("%s.shx" % (clean(row[0])))
-#     # print cmd
-#     subprocess.call(cmd, cwd=exportDir)
-
-# https://fastkml.readthedocs.io/en/latest/usage_guide.html#build-a-kml-from-scratch
-kmlroot = kml.KML()
-ns = '{http://www.opengis.net/kml/2.2}'
-# 'docid'
-kmldoc = kml.Document(ns, jsondata['key'], jsondata['name'], jsondata)
-kmlroot.append(kmldoc)
-
-for row in importCon.execute("select aenttypeid, aenttypename, aenttypedescription from aenttype"):
-    aenttypename = row[1]
-    kmlfolder = kml.Folder(ns, row[0], aenttypename, row[2])
-    kmldoc.append(kmlfolder)
-
-    # Make a placemark for each geometry in this aent
-    for geomrow in importCon.execute("SELECT uuid, asewkb(geosptialcolumn) FROM latestnondeletedarchent where aenttypeid = ? and geosptialcolumn is not null", [row[0]]):
-        print geomrow
-        exportrow = exportCon.execute("SELECT * FROM {} WHERE uuid = ?".format(aenttypename), [geomrow[0]]).fetchone()
-        placemark = kml.Placemark(ns, exportrow['uuid'], exportrow['identifier'])
-        placemark.geometry = loads(geomrow[1])
-
-        for key in exportrow:
-            kmldata = kml.Data(ns, name=key, value=exportrow[key])
-
-        kmlfolder.append(placemark)
-
-
-
-
+    files.append("%s.dbf" % (clean(row[0])))
+    files.append("%s.shp" % (clean(row[0])))
+    files.append("%s.shx" % (clean(row[0])))
+    # print cmd
+    subprocess.call(cmd, cwd=exportDir)
 
 for at in importCon.execute("select aenttypename from aenttype"):
     aenttypename = "%s" % (clean(at[0]))
@@ -583,18 +552,13 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
 print "```"
 pprint(files)
 print "```"
-
-# tarf = tarfile.open("%s/%s-export.tar.bz2" % (finalExportDir,moduleName), 'w:bz2')
-# try:
-#     for file in files:
-#         tarf.add(exportDir+file, arcname=moduleName+'/'+file)
-# finally:
-#     tarf.close()
-
-
-with ZipFile("%s/%s-export.zip" % (finalExportDir, moduleName), 'w', compression, allowZip64=True) as zipf:
+tarf = tarfile.open("%s/%s-export.tar.bz2" % (finalExportDir,moduleName), 'w:bz2')
+try:
     for file in files:
-        zipf.write(exportDir+file, arcname=moduleName+'/'+file)
+        tarf.add(exportDir+file, arcname=moduleName+'/'+file)
+finally:
+    tarf.close()
+
 
 try:
     os.remove(exportDir)
