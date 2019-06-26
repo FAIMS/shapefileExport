@@ -361,7 +361,7 @@ if images:
     outputFilename =defaultdict(int)
     outputAent = defaultdict(int)
     mime = magic.Magic(mime=True)
-    print "* File list exported:"
+    print "## Image list exported:"
     for filename in importCon.execute("select uuid, measure, freetext, certainty, attributename, aenttypename from latestnondeletedaentvalue join attributekey using (attributeid) join latestnondeletedarchent using (uuid) join aenttype using (aenttypeid) where attributeisfile is not null and measure is not null"):
         try:        
             oldPath = filename[1].split("/")
@@ -431,7 +431,7 @@ if images:
                                                                    "mimeType":mime.from_file(originalDir+filename[1])
                                                                    }
                 
-                print "    * %s" % (newFilename)
+                print "    * `%s`" % (newFilename)
                 files.append(newFilename+".json")
                 files.append(newFilename)
                 attachedfiledump.append({"uuid":filename[0], 
@@ -458,7 +458,7 @@ if images:
     csv_writer = UnicodeWriter(open(exportDir+"attachedfiledump.csv", "wb+"))
     csv_writer.writerow(["uuid", "aenttype", "attribute", "filename", "mimeType"])
     for row in attachedfiledump:
-        print(row)
+        #print(row)
         csv_writer.writerow([row["uuid"], row["aenttype"], row["attribute"], row["newFilename"], row["mimeType"]])
     # check input flag as to what filename to export
 
@@ -553,9 +553,11 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
     csv_writer = UnicodeWriter(open(exportDir+"Relationship-%s.csv" % (clean(relntypename)), "wb+"))
     csv_writer.writerow([i[0] for i in relncursor.description]) # write headers
     csv_writer.writerows(relncursor)
-print "```"
-pprint(files)
-print "```"
+
+print "## File list exported"
+for file in files:
+    print "* `{}`".format(file)
+
 tarf = tarfile.open("%s/%s-export.tar.bz2" % (finalExportDir,moduleName), 'w:bz2')
 try:
     for file in files:
