@@ -554,9 +554,9 @@ for relntypeid, relntypename in relntypecursor.execute(relntypequery):
     csv_writer.writerow([i[0] for i in relncursor.description]) # write headers
     csv_writer.writerows(relncursor)
 
-print "## File list exported"
-for file in files:
-    print "* `{}`".format(file)
+# print "## File list exported"
+# for file in files:
+#     print "* `{}`".format(file)
 
 tarf = tarfile.open("%s/%s-export.tar.bz2" % (finalExportDir,moduleName), 'w:bz2')
 try:
