@@ -1,7 +1,7 @@
 {
-  "name":"Emergency Exporter",
+  "name":"Generalised Exporter",
   "version":70.1,
-  "key":"4322e298-1ca3-11ea-bf37-7b4471dc36ea",
+  "key":"e6485af4-6e05-11e4-8c49-3c970e0cc7d6",
   "interface":[
   {
       "type":"checkbox",
@@ -10,6 +10,13 @@
         "Please include images"           
       ],
       "default":"Please include images"
+    },
+    {
+      "type":"checkbox",
+      "label":"Export identifier components in plain as well as formatted state (if in doubt, leave the setting as is)?",
+      "items":[
+        "No, I wish to skip plain identifier components"
+     ]
     }
   ]
 }
